@@ -1,15 +1,21 @@
-
-
-
-import os
+"""Nettoyage des données football (SofaScore) : une ligne par match."""
 import re
-import pandas as pd
-import numpy as np
+import sys
+from pathlib import Path
 
-FICHIER_BRUT = r"C:\Users\HP\Desktop\NAFA_données\données\brutes\_sofascore-all-match-id-data.csv"
-DOSSIER_SORTIE = r"C:\Users\HP\Desktop\NAFA_données\données\traitées"
-FICHIER_PROPRE = os.path.join(DOSSIER_SORTIE, "football_propre.csv")
-RAPPORT_QUALITE = os.path.join(DOSSIER_SORTIE, "rapport_qualite.csv")
+import numpy as np
+import pandas as pd
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from Sources.outils import BRUT_FOOT, DOSSIER_TRAITEES  # noqa: E402
+
+FICHIER_BRUT = BRUT_FOOT
+DOSSIER_SORTIE = DOSSIER_TRAITEES
+FICHIER_PROPRE = DOSSIER_SORTIE / "football_matchs.csv"
+RAPPORT_QUALITE = DOSSIER_SORTIE / "rapport_qualite_football.csv"
+
+# Au-delà de ce taux de valeurs manquantes, le match est jugé inexploitable
+SEUIL_LIGNE_VIDE = 0.8
 
 # Colonnes au format "X/Y (Z%)" -> on en tire 3 colonnes : _reussi, _tentes, _pct
 COLONNES_RATIO = [
@@ -22,7 +28,11 @@ COLONNES_POURCENTAGE = [
     "Ball_possession", "Duels", "Tackles_won",
 ]
 
-CIBLES = ["total_buts_match", "total_corners_match", "total_cartons_jaunes_match"]
+CIBLES = ["total_buts_match", "total_corners_match", "total_cartons_jaunes_match",
+          "total_touches_match"]
+
+# Un vrai match compte 30 à 60 touches : en dessous de ce seuil, donnée incomplète
+SEUIL_TOUCHES_MIN = 10
 IDENTIFIANTS = ["match_id", "home_team", "away_team", "home_score", "away_score"]
 
 
@@ -99,6 +109,14 @@ def calculer_cibles(df):
         np.nan,
         df["Yellow_cards_home"] + df["Yellow_cards_away"],
     )
+
+    df["Throw-ins_home"] = pd.to_numeric(df["Throw-ins_home"], errors="coerce")
+    df["Throw-ins_away"] = pd.to_numeric(df["Throw-ins_away"], errors="coerce")
+    total_touches = df["Throw-ins_home"] + df["Throw-ins_away"]  # NaN si un camp manque
+    aberrant = total_touches < SEUIL_TOUCHES_MIN
+    print(f"Matchs avec un nombre de touches aberrant mis à vide : {aberrant.sum()}")
+    df.loc[aberrant, ["Throw-ins_home", "Throw-ins_away"]] = np.nan
+    df["total_touches_match"] = total_touches.where(~aberrant)
     return df
 
 
@@ -112,12 +130,16 @@ def rapport_qualite(df):
 def main():
     print("DÉMARRAGE DU NETTOYAGE")
 
-    if not os.path.exists(FICHIER_BRUT):
+    if not FICHIER_BRUT.exists():
         print(f"Erreur : fichier brut introuvable : {FICHIER_BRUT}")
         return
 
     df = pd.read_csv(FICHIER_BRUT)
     print(f"Fichier chargé. Matchs bruts : {len(df)}")
+
+    vides = df.isna().mean(axis=1) > SEUIL_LIGNE_VIDE
+    df = df[~vides]
+    print(f"Matchs presque vides retirés : {vides.sum()}")
 
     df = calculer_cibles(df)
     print(f"Matchs conservés après filtrage score manquant : {len(df)}")
@@ -130,7 +152,7 @@ def main():
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0)
 
-    os.makedirs(DOSSIER_SORTIE, exist_ok=True)
+    DOSSIER_SORTIE.mkdir(parents=True, exist_ok=True)
     df.to_csv(FICHIER_PROPRE, index=False)
     print(f"Fichier propre sauvegardé : {FICHIER_PROPRE}")
 
