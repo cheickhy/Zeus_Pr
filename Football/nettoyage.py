@@ -14,16 +14,15 @@ DOSSIER_SORTIE = DOSSIER_TRAITEES
 FICHIER_PROPRE = DOSSIER_SORTIE / "football_matchs.csv"
 RAPPORT_QUALITE = DOSSIER_SORTIE / "rapport_qualite_football.csv"
 
-# Au-delà de ce taux de valeurs manquantes, le match est jugé inexploitable
+
 SEUIL_LIGNE_VIDE = 0.8
 
-# Colonnes au format "X/Y (Z%)" -> on en tire 3 colonnes : _reussi, _tentes, _pct
+
 COLONNES_RATIO = [
     "Final_third_phase", "Long_balls", "Crosses",
     "Ground_duels", "Aerial_duels", "Dribbles",
 ]
 
-# Colonnes au format "Z%" seul -> une colonne _pct
 COLONNES_POURCENTAGE = [
     "Ball_possession", "Duels", "Tackles_won",
 ]
@@ -31,7 +30,7 @@ COLONNES_POURCENTAGE = [
 CIBLES = ["total_buts_match", "total_corners_match", "total_cartons_jaunes_match",
           "total_touches_match"]
 
-# Un vrai match compte 30 à 60 touches : en dessous de ce seuil, donnée incomplète
+
 SEUIL_TOUCHES_MIN = 10
 IDENTIFIANTS = ["match_id", "home_team", "away_team", "home_score", "away_score"]
 

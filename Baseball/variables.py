@@ -152,11 +152,14 @@ def rattacher(df, feats, cle_df, cle_feats, prefixe):
     return df.merge(f.rename(columns={cle_feats: cle_df}), on=["gamePk", cle_df], how="left")
 
 
-def main():
-    print("=== VARIABLES D'ENTRÉE BASEBALL ===")
-    df = pd.read_csv(DOSSIER_TRAITEES / "baseball_matchs.csv", parse_dates=["date"])
+def construire(df):
+    """Calcule toutes les variables d'entrée à partir des matchs (une ligne par match).
+
+    Utilisé par main() pour l'entraînement, et par Baseball/prediction.py pour les
+    matchs à venir (lignes sans résultat, ajoutées à la fin de l'historique).
+    """
     df = df.sort_values(["date", "gamePk"]).reset_index(drop=True)
-    df["point_en_manche_1"] = (df["total_manche_1"] > 0).astype(int)
+    df["point_en_manche_1"] = (df["total_manche_1"] > 0).astype(int).where(df["total_manche_1"].notna())
 
     eq = variables_equipes(table_equipes(df))
     lc = variables_lanceurs(df)
@@ -175,14 +178,23 @@ def main():
     sortie = rattacher(sortie, fatigue, "away_id", "equipe", "away_")
 
     etape("Contexte du match (connu à l'avance)")
+    sortie = sortie.copy()   # regroupe les colonnes en mémoire (évite un avertissement de lenteur)
     sortie["mois"] = sortie["date"].dt.month
     sortie["nuit"] = (df["day_night"] == "night").astype(int)
     sortie["temperature"] = df["weather_temp"]
-    sortie["vent"] = df["wind_speed"]
+    # Le vent est stocké en texte (« 9 mph, L To R ») : on extrait la vitesse
+    sortie["vent"] = pd.to_numeric(df["wind_speed"].astype(str).str.extract(r"(\d+)\s*mph")[0],
+                                   errors="coerce")
     sortie["toit_ferme"] = df["weather_cond"].isin(["Dome", "Roof Closed"]).astype(int)
 
     assert sortie["gamePk"].is_unique and len(sortie) == len(df)
-    sauvegarder(sortie, "baseball_variables.csv")
+    return sortie
+
+
+def main():
+    print("=== VARIABLES D'ENTRÉE BASEBALL ===")
+    df = pd.read_csv(DOSSIER_TRAITEES / "baseball_matchs.csv", parse_dates=["date"])
+    sauvegarder(construire(df), "baseball_variables.csv")
 
 
 if __name__ == "__main__":

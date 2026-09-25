@@ -24,6 +24,23 @@ COLS_FRAPPEURS = ["ab", "hits", "doubles", "triples", "hr", "bb", "so", "hbp",
                   "sac_fly", "total_bases", "left_on_base"]
 
 
+DOSSIER_MAJ = BRUT_MLB.parent / "mise_a_jour"   # rempli par Baseball/mise_a_jour.py
+
+
+def lire_brut(nom, **options):
+    """Lit un fichier brut d'origine et y ajoute les matchs téléchargés par la mise à jour.
+
+    Un match présent dans la mise à jour remplace sa ligne d'origine (par exemple
+    un match encore « Scheduled » dans les données brutes, joué depuis).
+    """
+    brut = pd.read_csv(BRUT_MLB / f"{nom}.csv", **options)
+    chemin_maj = DOSSIER_MAJ / f"{nom}.csv"
+    if not chemin_maj.exists():
+        return brut
+    maj = pd.read_csv(chemin_maj, **options)
+    return pd.concat([brut[~brut["gamePk"].isin(maj["gamePk"])], maj], ignore_index=True)
+
+
 def manches_en_retraits(ip):
     """5.2 manches lancées = 5 manches et 2/3 = 17 retraits (et non 5,2)."""
     entier = ip.fillna(0).astype(int)
@@ -33,7 +50,7 @@ def manches_en_retraits(ip):
 
 def charger_calendrier():
     etape("Calendrier : matchs terminés, un seul exemplaire par match")
-    sch = pd.read_csv(BRUT_MLB / "schedule.csv")
+    sch = lire_brut("schedule")
     n0 = len(sch)
     sch = sch[sch["status"] == "Final"].dropna(subset=["home_score", "away_score"])
     sch["date"] = pd.to_datetime(sch["date"])
@@ -49,7 +66,7 @@ def charger_calendrier():
 
 def resumer_manches():
     etape("Scores par manche : cibles 1ère manche et 3 premières manches")
-    ls = pd.read_csv(BRUT_MLB / "linescore.csv")
+    ls = lire_brut("linescore")
     ls = ls.drop_duplicates(["gamePk", "inning"])
     g = ls.groupby("gamePk")
     res = pd.DataFrame({
@@ -80,16 +97,21 @@ def a_plat(df, prefixe_col=""):
 
 def resumer_lanceurs():
     etape("Lanceurs : totaux par équipe et lanceur principal")
-    p = pd.read_csv(BRUT_MLB / "pitching.csv")
+    p = lire_brut("pitching")
     # Même ligne en double pour les matchs suspendus : on retire les doublons (hors date)
     p = p.drop_duplicates([c for c in p.columns if c not in ("date", "season")])
     p["outs"] = manches_en_retraits(p["innings_pitched"])
 
     equipe = p.groupby(["gamePk", "side"])[COLS_LANCEURS].sum(min_count=1)
-    # Le fichier brut n'indique pas le partant et ne respecte pas l'ordre d'entrée.
-    # On prend le lanceur ayant affronté le plus de frappeurs : c'est le partant
-    # dans la grande majorité des matchs (approximation fausse pour les « openers »).
-    idx = p.sort_values("batters_faced", ascending=False).groupby(["gamePk", "side"]).head(1).index
+    # Les fichiers bruts d'origine n'indiquent pas le partant et ne respectent pas l'ordre
+    # d'entrée : on prend le lanceur ayant affronté le plus de frappeurs (c'est le partant
+    # dans la grande majorité des matchs). Les matchs de la mise à jour indiquent le vrai
+    # partant (colonne « partant ») : il est alors prioritaire.
+    if "partant" not in p.columns:
+        p["partant"] = 0
+    p["partant"] = p["partant"].fillna(0)
+    idx = (p.sort_values(["partant", "batters_faced"], ascending=False)
+           .groupby(["gamePk", "side"]).head(1).index)
     partant = (p.loc[idx]
                .set_index(["gamePk", "side"])
                [["player_id", "player_name", "outs", "earned_runs", "hits", "bb", "so",
@@ -100,8 +122,8 @@ def resumer_lanceurs():
 
 def resumer_frappeurs():
     etape("Frappeurs : totaux offensifs par équipe (fichier volumineux)")
-    b = pd.read_csv(BRUT_MLB / "batting.csv",
-                    usecols=["gamePk", "side", "player_id"] + COLS_FRAPPEURS)
+    b = lire_brut("batting",
+                  usecols=["gamePk", "side", "player_id"] + COLS_FRAPPEURS)
     b = b.drop_duplicates()
     equipe = b.groupby(["gamePk", "side"])[COLS_FRAPPEURS].sum(min_count=1)
     return a_plat(equipe, "frap_")
