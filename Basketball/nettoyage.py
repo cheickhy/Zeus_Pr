@@ -23,9 +23,25 @@ STATS_JOUEURS = ["fgm", "fga", "fg3m", "fg3a", "ftm", "fta", "oreb", "dreb",
                  "reb", "ast", "stl", "blk", "to", "pf"]
 
 
+DOSSIER_MAJ = BRUT_NBA.parent / "mise_a_jour"   # rempli par Basketball/mise_a_jour.py
+
+
+def lire_brut(nom, **options):
+    """Lit un fichier brut d'origine et y ajoute les matchs téléchargés par la mise à jour.
+
+    Un match présent dans la mise à jour remplace toutes ses lignes d'origine.
+    """
+    brut = pd.read_csv(BRUT_NBA / f"{nom}.csv", **options)
+    chemin_maj = DOSSIER_MAJ / f"{nom}.csv"
+    if not chemin_maj.exists():
+        return brut
+    maj = pd.read_csv(chemin_maj)
+    return pd.concat([brut[~brut["game_id"].isin(maj["game_id"])], maj], ignore_index=True)
+
+
 def charger_calendrier():
     etape("Calendrier : suppression des doublons, identification de l'équipe à domicile")
-    sch = pd.read_csv(BRUT_NBA / "schedule.csv").drop_duplicates()
+    sch = lire_brut("schedule").drop_duplicates()
     assert sch["game_id"].is_unique, "Un match a plusieurs lignes différentes"
     sch["date"] = pd.to_datetime(sch["date"])
     # "BOS vs. CLE" = BOS reçoit ; "BOS @ CLE" = BOS se déplace
@@ -37,7 +53,7 @@ def charger_calendrier():
 
 def charger_quart_temps():
     etape("Quart-temps : doublons, matchs vides ou annulés")
-    q = pd.read_csv(BRUT_NBA / "quarters.csv")
+    q = lire_brut("quarters")
     n0 = q["game_id"].nunique()
     q = q.dropna(subset=["team_id"]).drop_duplicates(["game_id", "team_id"])
     q["team_id"] = q["team_id"].astype("int64")
@@ -60,7 +76,14 @@ def resumer_joueurs():
     p = pd.read_csv(BRUT_NBA / "players.csv", usecols=["game_id", "team_id", "player_id"] + STATS_JOUEURS)
     p = p.drop_duplicates(["game_id", "team_id", "player_id"])
     # Joueurs sans statistiques = n'ont pas joué : ignorés par la somme (min_count=1)
-    return p.groupby(["game_id", "team_id"])[STATS_JOUEURS].sum(min_count=1).reset_index()
+    equipes = p.groupby(["game_id", "team_id"])[STATS_JOUEURS].sum(min_count=1).reset_index()
+    # Matchs de la mise à jour : statistiques d'équipe déjà additionnées par la NBA
+    chemin_maj = DOSSIER_MAJ / "equipes.csv"
+    if chemin_maj.exists():
+        maj = pd.read_csv(chemin_maj)
+        equipes = pd.concat([equipes[~equipes["game_id"].isin(maj["game_id"])],
+                             maj[["game_id", "team_id"] + STATS_JOUEURS]], ignore_index=True)
+    return equipes
 
 
 def main():

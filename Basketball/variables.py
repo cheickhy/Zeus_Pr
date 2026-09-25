@@ -86,9 +86,12 @@ def rattacher(df, feats, cle_df, prefixe):
     return df.merge(f.rename(columns={"equipe": cle_df}), on=["game_id", cle_df], how="left")
 
 
-def main():
-    print("=== VARIABLES D'ENTRÉE BASKET ===")
-    df = pd.read_csv(DOSSIER_TRAITEES / "basketball_matchs.csv", parse_dates=["date"])
+def construire(df):
+    """Calcule toutes les variables d'entrée à partir des matchs (une ligne par match).
+
+    Utilisé par main() pour l'entraînement, et par Basketball/prediction.py pour les
+    matchs à venir (lignes sans résultat, ajoutées à la fin de l'historique).
+    """
     df = df.sort_values(["date", "game_id"]).reset_index(drop=True)
 
     eq = variables_equipes(table_equipes(df))
@@ -104,7 +107,13 @@ def main():
     sortie["annee_saison"] = sortie["season"].str[:4].astype(int)
 
     assert sortie["game_id"].is_unique and len(sortie) == len(df)
-    sauvegarder(sortie, "basketball_variables.csv")
+    return sortie
+
+
+def main():
+    print("=== VARIABLES D'ENTRÉE BASKET ===")
+    df = pd.read_csv(DOSSIER_TRAITEES / "basketball_matchs.csv", parse_dates=["date"])
+    sauvegarder(construire(df), "basketball_variables.csv")
 
 
 if __name__ == "__main__":
