@@ -25,3 +25,23 @@ def sauvegarder(df, nom_fichier):
 
 def etape(message):
     print(f"\n--> {message}")
+
+
+def moyenne_precedente(df, groupe, colonne, fenetre, min_matchs=None):
+    """Moyenne de `colonne` sur les `fenetre` lignes PRÉCÉDENTES de chaque groupe.
+
+    Le décalage shift(1) exclut la ligne en cours : le match à prédire
+    n'entre jamais dans sa propre moyenne (pas de fuite d'information).
+    `df` doit être trié par date à l'intérieur de chaque groupe.
+    """
+    min_matchs = min_matchs or max(3, fenetre // 3)
+    decale = df.groupby(groupe)[colonne].shift(1)
+    return (decale.groupby(df[groupe]).rolling(fenetre, min_periods=min_matchs).mean()
+            .reset_index(level=0, drop=True))
+
+
+def somme_precedente(df, groupe, colonne, fenetre, min_matchs=1):
+    """Somme de `colonne` sur les `fenetre` lignes PRÉCÉDENTES de chaque groupe."""
+    decale = df.groupby(groupe)[colonne].shift(1)
+    return (decale.groupby(df[groupe]).rolling(fenetre, min_periods=min_matchs).sum()
+            .reset_index(level=0, drop=True))

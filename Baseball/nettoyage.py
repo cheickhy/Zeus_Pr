@@ -92,7 +92,8 @@ def resumer_lanceurs():
     idx = p.sort_values("batters_faced", ascending=False).groupby(["gamePk", "side"]).head(1).index
     partant = (p.loc[idx]
                .set_index(["gamePk", "side"])
-               [["player_id", "player_name", "outs", "earned_runs", "hits", "bb", "so"]]
+               [["player_id", "player_name", "outs", "earned_runs", "hits", "bb", "so",
+                 "pitch_count"]]
                .rename(columns={"player_id": "id", "player_name": "nom"}))
     return a_plat(equipe, "lanc_").merge(a_plat(partant, "principal_"), on="gamePk")
 
