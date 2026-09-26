@@ -11,7 +11,8 @@ DOSSIER_TRAITEES = RACINE / "Données" / "Traitées"
 
 BRUT_MLB = DOSSIER_BRUTES / "mlb_data" / "mlb_data"
 BRUT_NBA = DOSSIER_BRUTES / "nba_data" / "nba_data"
-BRUT_FOOT = DOSSIER_BRUTES / "_sofascore-all-match-id-data.csv"
+# Ancien fichier SofaScore (sans dates) : isolé, seule source des touches
+BRUT_SOFASCORE = DOSSIER_BRUTES / "sofascore" / "_sofascore-all-match-id-data.csv"
 
 
 def sauvegarder(df, nom_fichier):

@@ -1,4 +1,9 @@
-"""Nettoyage des données football (SofaScore) : une ligne par match."""
+"""Nettoyage des données football SofaScore : une ligne par match.
+
+Données ISOLÉES du reste du projet : ce fichier n'a pas de dates, il ne sert
+que pour les touches (absentes des autres sources), si on retrouve un jour ses dates.
+Les autres marchés du football utilisent Football/nettoyage_championnats.py
+et Football/nettoyage_selections.py."""
 import re
 import sys
 from pathlib import Path
@@ -7,12 +12,12 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from Sources.outils import BRUT_FOOT, DOSSIER_TRAITEES  # noqa: E402
+from Sources.outils import BRUT_SOFASCORE, DOSSIER_TRAITEES  # noqa: E402
 
-FICHIER_BRUT = BRUT_FOOT
-DOSSIER_SORTIE = DOSSIER_TRAITEES
-FICHIER_PROPRE = DOSSIER_SORTIE / "football_matchs.csv"
-RAPPORT_QUALITE = DOSSIER_SORTIE / "rapport_qualite_football.csv"
+FICHIER_BRUT = BRUT_SOFASCORE
+DOSSIER_SORTIE = DOSSIER_TRAITEES / "sofascore"
+FICHIER_PROPRE = DOSSIER_SORTIE / "sofascore_matchs.csv"
+RAPPORT_QUALITE = DOSSIER_SORTIE / "rapport_qualite_sofascore.csv"
 
 
 SEUIL_LIGNE_VIDE = 0.8
