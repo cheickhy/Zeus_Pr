@@ -7,11 +7,6 @@ Une seule commande, à lancer avant les matchs (idéalement le vendredi, puis le
 Pour une date PASSÉE, le programme prédit comme si on était la veille (uniquement avec
 les matchs d'avant), puis compare immédiatement aux vrais résultats. Rien n'est enregistré.
 
-Étapes :
-1. Mise à jour des résultats (football-data.co.uk) et nettoyage.
-2. Bilan : les prédictions enregistrées sont comparées aux vrais résultats.
-3. Liste des prochains matchs (fichier « fixtures » du même site, avec les arbitres).
-4. Entraînement de LightGBM sur tous les matchs connus, puis prédiction des 4 marchés.
 
 Les prédictions sont enregistrées AVANT les matchs dans
 Données/Prédictions/football_predictions.csv.

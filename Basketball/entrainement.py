@@ -1,18 +1,4 @@
-"""Entraînement et évaluation des premiers modèles basket (totaux des deux équipes).
 
-Découpage dans le temps (jamais au hasard, sinon le modèle « voit le futur ») :
-- apprentissage : saisons 2008-09 à 2021-22
-- réglage       : saison 2022-23 (arrêt de l'apprentissage au bon moment)
-- test final    : saisons 2023-24 et suivantes (matchs jamais vus)
-
-Les lignes des bookmakers varient d'un match à l'autre : on mesure donc l'écart
-moyen (en points) entre le total prédit et le total réel, et on compare à deux
-prédictions naïves. On mesure aussi si le modèle se place du bon côté d'une
-« ligne naïve » calculée à partir des moyennes des équipes (imitation grossière
-d'une ligne de bookmaker, en attendant les vraies cotes).
-
-Entrée : Données/Traitées/basketball_variables.csv (produit par Basketball/variables.py)
-"""
 import sys
 from pathlib import Path
 

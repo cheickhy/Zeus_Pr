@@ -3,7 +3,7 @@
 Règle : chaque statistique est calculée sur les matchs PRÉCÉDENTS (fonctions de
 Sources/outils.py, qui décalent d'un match). Le match à prédire n'y entre jamais.
 
-Entrée  : Données/Traitées/football_championnats.csv (produit par nettoyage_championnats.py)
+Entrée  : Données/Traitées/football_championnats.csv 
 Sortie  : Données/Traitées/football_championnats_variables.csv
 """
 import re

@@ -4,8 +4,6 @@ Chaque fichier contient une saison d'un championnat : date, équipes, buts, tirs
 fautes, corners, cartons (et les cotes des bookmakers, non utilisées pour l'instant).
 
 Les fichiers sont enregistrés tels quels dans Données/brutes/football_data/.
-- Saisons terminées : téléchargées une seule fois.
-- Saison en cours : retéléchargée à chaque lancement (nouveaux matchs de la semaine).
 
 Utilisation : python Football/mise_a_jour.py
 """
