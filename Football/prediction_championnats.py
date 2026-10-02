@@ -1,17 +1,5 @@
 """Programme de prédiction des championnats européens : prochains matchs + bilan des prédictions passées.
-
-Une seule commande, à lancer avant les matchs (idéalement le vendredi, puis le mardi) :
-    python Football/prediction_championnats.py              -> tous les prochains matchs connus
-    python Football/prediction_championnats.py 2026-04-12   -> démonstration sur une date passée
-
-Pour une date PASSÉE, le programme prédit comme si on était la veille (uniquement avec
-les matchs d'avant), puis compare immédiatement aux vrais résultats. Rien n'est enregistré.
-
-
-Les prédictions sont enregistrées AVANT les matchs dans
-Données/Prédictions/football_predictions.csv.
 """
-import io
 import sys
 from datetime import date, datetime
 from pathlib import Path

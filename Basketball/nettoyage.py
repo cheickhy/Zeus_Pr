@@ -1,15 +1,3 @@
-"""Nettoyage des données NBA : une ligne par match avec les deux équipes.
-
-Corrections par rapport à l'ancien script :
-- le calendrier brut contient chaque match 3 à 5 fois : dédoublonné ;
-- le calendrier ne liste qu'une équipe par match : on part du fichier des
-  quart-temps, qui contient les deux, et on place domicile et extérieur sur une ligne ;
-- matchs sans score ou annulés (0 point) retirés ;
-- points des prolongations au-delà de la 2e récupérés à partir du total.
-
-ATTENTION : les statistiques des joueurs sont celles DU match.
-Elles ne doivent servir qu'à calculer des moyennes sur les matchs PRÉCÉDENTS.
-"""
 import sys
 from pathlib import Path
 

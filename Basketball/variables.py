@@ -1,11 +1,3 @@
-"""Variables d'entrée (features) du basket : uniquement des informations connues AVANT le match.
-
-Règle : chaque statistique est calculée sur les matchs PRÉCÉDENTS (fonctions de
-Sources/outils.py, qui décalent d'un match). Le match à prédire n'y entre jamais.
-
-Entrée  : Données/Traitées/basketball_matchs.csv (produit par Basketball/nettoyage.py)
-Sortie  : Données/Traitées/basketball_variables.csv
-"""
 import sys
 from pathlib import Path
 

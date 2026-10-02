@@ -8,7 +8,7 @@ Découpage dans le temps
 
 
 
-Entrée : Données/Traitées/baseball_variables.csv (produit par Baseball/variables.py)
+
 """
 import sys
 from pathlib import Path

@@ -1,20 +1,4 @@
-﻿"""Mise à jour des données NBA : télécharge les saisons récentes depuis stats.nba.com.
-
-Les fichiers bruts d'origine ne sont JAMAIS modifiés. Les données téléchargées sont
-écrites dans Données/brutes/nba_data/mise_a_jour/ et Basketball/nettoyage.py les lit
-en plus des fichiers d'origine.
-
-Chaque saison récente est retéléchargée entièrement (environ 8 demandes par saison,
-moins d'une minute) : c'est simple et ça corrige d'éventuels scores modifiés.
-
-Fichiers produits :
-- schedule.csv : une ligne par match (équipe à domicile), même format que l'origine
-- quarters.csv : points par quart-temps et par équipe, même format que l'origine
-- equipes.csv  : statistiques d'équipe par match (tirs, rebonds, fautes...),
-                 qui remplacent le détail joueur par joueur
-
-Utilisation : python Basketball/mise_a_jour.py
-"""
+﻿
 import json
 import sys
 import time

@@ -1,10 +1,7 @@
 """Variables d'entrée des championnats européens : uniquement des informations connues AVANT le match.
 
-Règle : chaque statistique est calculée sur les matchs PRÉCÉDENTS (fonctions de
+ chaque statistique est calculée sur les matchs PRÉCÉDENTS (fonctions de
 Sources/outils.py, qui décalent d'un match). Le match à prédire n'y entre jamais.
-
-Entrée  : Données/Traitées/football_championnats.csv 
-Sortie  : Données/Traitées/football_championnats_variables.csv
 """
 import re
 import sys

@@ -1,12 +1,3 @@
-"""Entraînement et évaluation des premiers modèles football (championnats européens).
-
-Découpage 
-- apprentissage : saisons 2005-06 à 2021-22
-- réglage       : saison 2022-23 (arrêt de l'apprentissage au bon moment)
-- test final    : saisons 2023-24 et suivantes (matchs jamais vus)
-
-
-"""
 import sys
 from pathlib import Path
 

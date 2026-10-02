@@ -1,9 +1,3 @@
-"""Nettoyage des données football SofaScore : une ligne par match.
-
-Données ISOLÉES du reste du projet : ce fichier n'a pas de dates, il ne sert
-que pour les touches (absentes des autres sources), si on retrouve un jour ses dates.
-Les autres marchés du football utilisent Football/nettoyage_championnats.py
-et Football/nettoyage_selections.py."""
 import re
 import sys
 from pathlib import Path

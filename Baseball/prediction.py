@@ -1,19 +1,13 @@
 """Programme quotidien : prédit les matchs MLB du jour et vérifie les prédictions passées.
 
-Une seule commande, à lancer chaque matin (avant les matchs) :
-    python Baseball/prediction.py              -> matchs d'aujourd'hui
-    python Baseball/prediction.py 2026-09-26   -> matchs d'une autre date
 
-Étapes :
 1. Mise à jour des données (matchs joués depuis la dernière fois).
 2. Nettoyage.
 3. Bilan : les prédictions déjà enregistrées sont comparées aux vrais résultats.
 4. Entraînement sur tous les matchs connus, puis prédiction des matchs du jour,
    avec les lanceurs partants annoncés par la MLB.
 
-Les prédictions sont enregistrées AVANT les matchs dans
-Données/Prédictions/baseball_predictions.csv : c'est la preuve qu'elles ont été
-faites sans connaître le résultat.
+
 """
 import sys
 from datetime import date, datetime
@@ -29,9 +23,9 @@ from sklearn.preprocessing import StandardScaler
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-import mise_a_jour  # noqa: E402
-import nettoyage  # noqa: E402
-import variables  # noqa: E402
+import mise_a_jour  
+import nettoyage  
+import variables  
 from Sources.outils import DOSSIER_TRAITEES, RACINE, etape  # noqa: E402
 
 FICHIER_PREDICTIONS = RACINE / "Données" / "Prédictions" / "baseball_predictions.csv"

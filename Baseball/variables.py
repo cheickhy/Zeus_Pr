@@ -1,6 +1,6 @@
 """Variables d'entrée (features) du baseball : uniquement des informations connues AVANT le match.
 
-Règle : chaque statistique est calculée sur les matchs PRÉCÉDENTS (fonctions de
+ chaque statistique est calculée sur les matchs PRÉCÉDENTS (fonctions de
 Sources/outils.py, qui décalent d'un match). Le match à prédire n'y entre jamais.
 
 Entrée  : Données/Traitées/baseball_matchs.csv (produit par Baseball/nettoyage.py)

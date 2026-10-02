@@ -1,14 +1,6 @@
 """Nettoyage des données MLB : une ligne par match, prête pour le calcul des features.
 
-Corrections par rapport à l'ancien script :
-- matchs suspendus (même gamePk à deux dates) retirés ;
-- seuls les matchs au statut "Final" sont gardés ;
-- ERA, WHIP, OPS, AVG sont vides dans les données brutes : on garde les
-  statistiques de base (retraits, points mérités, coups sûrs...) pour les recalculer ;
-- aucun faux 0 : une valeur absente reste vide.
 
-ATTENTION : les statistiques de lanceurs et de frappeurs sont celles DU match.
-Elles ne doivent servir qu'à calculer des moyennes sur les matchs PRÉCÉDENTS.
 """
 import sys
 from pathlib import Path

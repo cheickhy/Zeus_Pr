@@ -1,22 +1,3 @@
-"""Programme quotidien : prédit les totaux des matchs NBA du jour et vérifie les prédictions passées.
-
-Une seule commande, à lancer chaque jour avant les matchs :
-    python Basketball/prediction.py              -> matchs d'aujourd'hui
-    python Basketball/prediction.py 2026-10-21   -> matchs d'une autre date
-
-Pour une date PASSÉE, le programme fait une démonstration : il prédit comme si on
-était la veille (uniquement avec les matchs d'avant), puis compare immédiatement
-aux vrais résultats. Rien n'est enregistré dans ce cas.
-
-Étapes :
-1. Mise à jour des données (saisons récentes) et nettoyage.
-2. Bilan : les prédictions enregistrées sont comparées aux vrais résultats.
-3. Entraînement de LightGBM sur tous les matchs connus, puis prédiction des totaux
-   (1er quart-temps, mi-temps, match complet) des matchs du jour.
-
-Les prédictions des matchs à venir sont enregistrées AVANT les matchs dans
-Données/Prédictions/basketball_predictions.csv.
-"""
 import sys
 from datetime import date, datetime
 from pathlib import Path
