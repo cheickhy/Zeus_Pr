@@ -1,5 +1,6 @@
 """Programme de prédiction des championnats européens : prochains matchs + bilan des prédictions passées.
 """
+import io
 import sys
 from datetime import date, datetime
 from pathlib import Path
