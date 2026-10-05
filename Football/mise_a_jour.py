@@ -1,12 +1,4 @@
-"""Téléchargement des championnats européens depuis football-data.co.uk (gratuit).
-
-Chaque fichier contient une saison d'un championnat : date, équipes, buts, tirs,
-fautes, corners, cartons (et les cotes des bookmakers, non utilisées pour l'instant).
-
-Les fichiers sont enregistrés tels quels dans Données/brutes/football_data/.
-
-Utilisation : python Football/mise_a_jour.py
-"""
+"""Téléchargement des championnats européens depuis football-data.co.uk (gratuit)."""
 import sys
 import time
 import urllib.error

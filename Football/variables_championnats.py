@@ -1,8 +1,4 @@
-"""Variables d'entrée des championnats européens : uniquement des informations connues AVANT le match.
-
- chaque statistique est calculée sur les matchs PRÉCÉDENTS (fonctions de
-Sources/outils.py, qui décalent d'un match). Le match à prédire n'y entre jamais.
-"""
+"""Variables d'entrée des championnats européens : uniquement des informations connues AVANT le match."""
 import re
 import sys
 from pathlib import Path

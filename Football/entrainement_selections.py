@@ -1,16 +1,4 @@
-"""Entraînement et évaluation des modèles des sélections nationales (résultat et buts).
-
-Le modèle apprend sur TOUS les matchs internationaux (plus de données), puis on mesure
-sa fiabilité sur les matchs qui intéressent le projet : ceux des sélections africaines,
-la CAN, et les qualifications de la CAN jouées pendant la trêve de septembre-octobre 2026.
-
-Découpage dans le temps :
-- apprentissage : 2000 à 2019 (le classement Elo démarre en 1990 et se stabilise d'abord)
-- réglage       : 2020 et 2021
-- test final    : 2022 à aujourd'hui (dont la CAN 2024 et la CAN 2025 au Maroc)
-
-Entrée : Données/Traitées/football_selections_variables.csv
-"""
+"""Entraînement et évaluation des modèles des sélections nationales (résultat et buts)."""
 import sys
 from pathlib import Path
 

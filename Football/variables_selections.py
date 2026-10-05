@@ -1,14 +1,4 @@
-"""Variables d'entrée des sélections nationales (CAN comprise) : informations connues AVANT le match.
-
-Deux familles de variables :
-1. Classement Elo : une note de force par sélection, mise à jour après chaque match.
-   La note gagnée dépend de l'importance du match (CAN > qualifications > amical),
-   de l'écart de buts et de la force de l'adversaire. On utilise la note AVANT le match.
-2. Forme récente : buts marqués / encaissés et points pris sur les matchs PRÉCÉDENTS.
-
-Entrée  : Données/Traitées/football_selections.csv (produit par nettoyage_selections.py)
-Sortie  : Données/Traitées/football_selections_variables.csv
-"""
+"""Variables d'entrée des sélections nationales (CAN comprise) : informations connues AVANT le match."""
 import sys
 from pathlib import Path
 

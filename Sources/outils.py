@@ -1,8 +1,4 @@
-"""Chemins et fonctions communes au projet.
-
-Les chemins sont calculés à partir de l'emplacement du projet :
-le code fonctionne sur n'importe quel poste, sans chemin écrit en dur.
-"""
+"""Chemins et fonctions communes au projet."""
 from pathlib import Path
 
 RACINE = Path(__file__).resolve().parent.parent

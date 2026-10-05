@@ -1,14 +1,4 @@
-"""Programme quotidien : prédit les matchs MLB du jour et vérifie les prédictions passées.
-
-
-1. Mise à jour des données (matchs joués depuis la dernière fois).
-2. Nettoyage.
-3. Bilan : les prédictions déjà enregistrées sont comparées aux vrais résultats.
-4. Entraînement sur tous les matchs connus, puis prédiction des matchs du jour,
-   avec les lanceurs partants annoncés par la MLB.
-
-
-"""
+"""Programme quotidien : prédit les matchs MLB du jour et vérifie les prédictions passées."""
 import sys
 from datetime import date, datetime
 from pathlib import Path

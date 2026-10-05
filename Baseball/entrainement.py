@@ -1,15 +1,4 @@
-"""Entraînement et évaluation des premiers modèles baseball.
-
-Découpage dans le temps 
-- apprentissage : 2008 à 2022
-- réglage       : 2023 
-- test final    : 2024 à 2026
-
-
-
-
-
-"""
+"""Entraînement et évaluation des premiers modèles baseball."""
 import sys
 from pathlib import Path
 
