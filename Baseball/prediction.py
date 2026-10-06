@@ -16,7 +16,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import mise_a_jour  
 import nettoyage  
 import variables  
-from Sources.outils import DOSSIER_TRAITEES, RACINE, etape  # noqa: E402
+from Sources.outils import DOSSIER_TRAITEES, RACINE, arguments, etape, modele_sauvegarde  # noqa: E402
 
 FICHIER_PREDICTIONS = RACINE / "Données" / "Prédictions" / "baseball_predictions.csv"
 
@@ -80,7 +80,9 @@ def bilan(matchs):
 
 
 def main():
-    jour = sys.argv[1] if len(sys.argv) > 1 else date.today().isoformat()
+    args, reentrainer = arguments()
+    jour = args[0] if args else date.today().isoformat()
+    reutiliser = not reentrainer and jour >= date.today().isoformat()
     print(f"=== PRÉDICTIONS BASEBALL DU {jour} ===")
 
     mise_a_jour.main()
@@ -104,13 +106,14 @@ def main():
     histo = feats[feats["total_match"].notna()]
     a_predire = feats[feats["gamePk"].isin(futurs["gamePk"])]
 
-    etape("Entraînement sur tous les matchs connus, puis prédiction")
+    etape("Modèles (réutilisés s'ils ont moins de 7 jours), puis prédiction")
     sortie = futurs[["gamePk", "date", "home_team", "away_team",
                      "home_principal_nom", "away_principal_nom"]].copy()
     for col, (nom, cible) in MARCHES.items():
-        modele = make_pipeline(SimpleImputer(strategy="median"), StandardScaler(),
-                               LogisticRegression(C=0.05, max_iter=2000))
-        modele.fit(histo[colonnes], cible(histo))
+        def entrainer(cible=cible):
+            return make_pipeline(SimpleImputer(strategy="median"), StandardScaler(),
+                                 LogisticRegression(C=0.05, max_iter=2000)).fit(histo[colonnes], cible(histo))
+        modele = modele_sauvegarde(f"baseball_{col}", colonnes, entrainer, reutiliser)
         proba = pd.Series(modele.predict_proba(a_predire[colonnes])[:, 1], index=a_predire["gamePk"])
         sortie[col] = sortie["gamePk"].map(proba).round(3)
     sortie["date"] = sortie["date"].dt.date

@@ -14,7 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import mise_a_jour  # noqa: E402
 import nettoyage_championnats  # noqa: E402
 import variables_championnats as variables  # noqa: E402
-from Sources.outils import DOSSIER_TRAITEES, RACINE, etape  # noqa: E402
+from Sources.outils import DOSSIER_TRAITEES, RACINE, arguments, etape, modele_sauvegarde  # noqa: E402
 
 FICHIER_PREDICTIONS = RACINE / "Données" / "Prédictions" / "football_predictions.csv"
 URL_PROCHAINS_MATCHS = "https://www.football-data.co.uk/fixtures.csv"
@@ -87,7 +87,8 @@ def bilan(matchs):
 
 
 def main():
-    jour = date.fromisoformat(sys.argv[1]) if len(sys.argv) > 1 else date.today()
+    args, reentrainer = arguments()
+    jour = date.fromisoformat(args[0]) if args else date.today()
     demonstration = jour < date.today()
     print(f"=== PRÉDICTIONS FOOTBALL (championnats){' - démonstration du ' + str(jour) if demonstration else ''} ===")
 
@@ -117,10 +118,12 @@ def main():
     histo = feats[feats["total_buts"].notna()]
     a_predire = futurs[CLE].merge(feats, on=CLE, how="left")
 
-    etape("Entraînement sur tous les matchs connus, puis prédiction (quelques minutes)")
+    etape("Modèles (réutilisés s'ils ont moins de 7 jours), puis prédiction")
     sortie = a_predire[CLE + ["championnat"]].copy()
     for col, (nom, cible, ligne) in MARCHES.items():
-        modele = entrainer(histo, colonnes, cible, ligne)
+        modele = modele_sauvegarde(f"football_{col}", colonnes,
+                                   lambda cible=cible, ligne=ligne: entrainer(histo, colonnes, cible, ligne),
+                                   reutiliser=not (demonstration or reentrainer))
         sortie[col] = modele.predict_proba(a_predire[colonnes])[:, 1].round(3)
     sortie["predit_le"] = datetime.now().strftime("%Y-%m-%d %H:%M")
 

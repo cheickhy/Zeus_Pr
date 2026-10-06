@@ -10,7 +10,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import mise_a_jour  # noqa: E402
 import nettoyage  # noqa: E402
 import variables  # noqa: E402
-from Sources.outils import DOSSIER_TRAITEES, RACINE, etape  # noqa: E402
+from Sources.outils import DOSSIER_TRAITEES, RACINE, arguments, etape, modele_sauvegarde  # noqa: E402
 
 FICHIER_PREDICTIONS = RACINE / "Données" / "Prédictions" / "basketball_predictions.csv"
 CIBLES = {"total_q1": "1er quart-temps", "total_mi_temps": "Mi-temps", "total_match": "Match"}
@@ -76,7 +76,8 @@ def bilan(matchs):
 
 
 def main():
-    jour = date.fromisoformat(sys.argv[1]) if len(sys.argv) > 1 else date.today()
+    args, reentrainer = arguments()
+    jour = date.fromisoformat(args[0]) if args else date.today()
     demonstration = jour < date.today()
     print(f"=== PRÉDICTIONS BASKET DU {jour}{' (démonstration)' if demonstration else ''} ===")
 
@@ -104,10 +105,12 @@ def main():
     histo = feats[feats["total_match"].notna()]
     a_predire = feats[feats["game_id"].isin(futurs["game_id"])].set_index("game_id")
 
-    etape("Entraînement sur tous les matchs connus, puis prédiction")
+    etape("Modèles (réutilisés s'ils ont moins de 7 jours), puis prédiction")
     sortie = futurs[["game_id", "date", "home_team_abbr", "away_team_abbr"]].copy()
     for cible in CIBLES:
-        modele = entrainer(histo, colonnes, cible)
+        modele = modele_sauvegarde(f"basket_{cible}", colonnes,
+                                   lambda cible=cible: entrainer(histo, colonnes, cible),
+                                   reutiliser=not (demonstration or reentrainer))
         prevu = pd.Series(modele.predict(a_predire[colonnes]), index=a_predire.index)
         sortie[f"prevu_{cible}"] = sortie["game_id"].map(prevu).round(1)
     sortie["date"] = pd.to_datetime(sortie["date"]).dt.date
