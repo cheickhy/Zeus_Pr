@@ -50,8 +50,11 @@ def entrainer(histo, colonnes, cible):
     essai = lgb.LGBMRegressor(n_estimators=3000, **PARAMS)
     essai.fit(app[colonnes], app[cible], eval_X=(reg[colonnes],), eval_y=(reg[cible],),
               eval_metric="l1", callbacks=[lgb.early_stopping(100, verbose=False)])
+    # Erreur habituelle du modèle, mesurée sur la saison qu'il n'a pas vue : sert à calculer
+    # la probabilité de dépasser n'importe quelle ligne (les erreurs suivent une loi normale)
+    sigma = float((reg[cible] - essai.predict(reg[colonnes])).std())
     final = lgb.LGBMRegressor(n_estimators=max(essai.best_iteration_, 50), **PARAMS)
-    return final.fit(histo[colonnes], histo[cible])
+    return {"modele": final.fit(histo[colonnes], histo[cible]), "sigma": sigma}
 
 
 def comparer(tableau, titre):
@@ -111,16 +114,19 @@ def main():
         modele = modele_sauvegarde(f"basket_{cible}", colonnes,
                                    lambda cible=cible: entrainer(histo, colonnes, cible),
                                    reutiliser=not (demonstration or reentrainer))
-        prevu = pd.Series(modele.predict(a_predire[colonnes]), index=a_predire.index)
+        prevu = pd.Series(modele["modele"].predict(a_predire[colonnes]), index=a_predire.index)
         sortie[f"prevu_{cible}"] = sortie["game_id"].map(prevu).round(1)
+        sortie[f"sigma_{cible}"] = round(modele["sigma"], 1)
     sortie["date"] = pd.to_datetime(sortie["date"]).dt.date
     sortie["predit_le"] = datetime.now().strftime("%Y-%m-%d %H:%M")
 
     print(sortie.rename(columns={
         "home_team_abbr": "domicile", "away_team_abbr": "extérieur",
         "prevu_total_q1": "1er QT", "prevu_total_mi_temps": "Mi-temps",
-        "prevu_total_match": "Match"}).drop(columns=["game_id", "date", "predit_le"])
+        "prevu_total_match": "Match"})[["domicile", "extérieur", "1er QT", "Mi-temps", "Match"]]
         .to_string(index=False))
+    print("Probabilité pour une ligne de bookmaker : python Basketball/proba_ligne.py ÉQUIPE MARCHÉ LIGNE"
+          "  (ex. BOS match 220.5)")
 
     if demonstration:
         print()
