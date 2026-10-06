@@ -5,8 +5,9 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from scipy import optimize, stats
 from sklearn.impute import SimpleImputer
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LogisticRegression, PoissonRegressor
 from sklearn.metrics import accuracy_score, log_loss
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
@@ -31,6 +32,26 @@ MARCHES = {
     "proba_plus_8_5": ("Plus de 8,5 points sur le match",
                        lambda d: (d["total_match"] > 8.5).astype(int)),
 }
+# Marché calculé par le modèle de comptage (binomiale négative), utilisé aussi pour le bilan
+MARCHE_3_MANCHES = {"proba_3m_plus_2_5": ("Plus de 2,5 points sur les 3 premières manches",
+                                          lambda d: (d["total_3_prem_manches"] > 2.5).astype(int))}
+
+
+def entrainer_3_manches(histo, colonnes):
+    """Nombre moyen de points attendu (Poisson) + dispersion r réglée sur la dernière saison.
+
+    La binomiale négative tient compte du fait que les points varient plus que la moyenne :
+    elle donne la probabilité de dépasser N'IMPORTE QUELLE ligne avec un seul modèle.
+    """
+    pipe = lambda: make_pipeline(SimpleImputer(strategy="median"), StandardScaler(),
+                                 PoissonRegressor(alpha=1e-3, max_iter=1000))
+    cible = "total_3_prem_manches"
+    derniere = histo["season"].max()
+    app, reg = histo[histo["season"] < derniere], histo[histo["season"] == derniere]
+    mu = pipe().fit(app[colonnes], app[cible]).predict(reg[colonnes])
+    nll = lambda lr: -stats.nbinom.logpmf(reg[cible], np.exp(lr), np.exp(lr) / (np.exp(lr) + mu)).sum()
+    r = float(np.exp(optimize.minimize_scalar(nll, bounds=(-3, 6), method="bounded").x))
+    return {"modele": pipe().fit(histo[colonnes], histo[cible]), "r": r}
 
 
 def matchs_a_venir(jour):
@@ -63,14 +84,17 @@ def bilan(matchs):
         print("Aucune prédiction enregistrée pour l'instant.")
         return
     pred = pd.read_csv(FICHIER_PREDICTIONS)
-    resultats = matchs[["gamePk", "total_manche_1", "total_match"]]
+    resultats = matchs[["gamePk", "total_manche_1", "total_3_prem_manches", "total_match"]]
     joues = pred.merge(resultats, on="gamePk", how="inner")
     print(f"Prédictions enregistrées : {len(pred)} | matchs déjà joués : {len(joues)}")
     if len(joues) == 0:
         return
     lignes = []
-    for col, (nom, cible) in MARCHES.items():
-        y, p = cible(joues), joues[col]
+    for col, (nom, cible) in {**MARCHES, **MARCHE_3_MANCHES}.items():
+        if col not in joues:          # prédictions enregistrées avant l'ajout de ce marché
+            continue
+        t = joues.dropna(subset=[col])
+        y, p = cible(t), t[col]
         lignes.append({"marché": nom, "matchs": len(y),
                        "bonnes réponses": accuracy_score(y, p > 0.5),
                        "score d'erreur": log_loss(y, p, labels=[0, 1])})
@@ -116,14 +140,23 @@ def main():
         modele = modele_sauvegarde(f"baseball_{col}", colonnes, entrainer, reutiliser)
         proba = pd.Series(modele.predict_proba(a_predire[colonnes])[:, 1], index=a_predire["gamePk"])
         sortie[col] = sortie["gamePk"].map(proba).round(3)
+    nb = modele_sauvegarde("baseball_3_manches", colonnes, lambda: entrainer_3_manches(histo, colonnes), reutiliser)
+    mu = pd.Series(nb["modele"].predict(a_predire[colonnes]), index=a_predire["gamePk"])
+    sortie["mu_3_manches"] = sortie["gamePk"].map(mu).round(3)
+    sortie["r_3_manches"] = round(nb["r"], 3)
+    r = nb["r"]
+    sortie["proba_3m_plus_2_5"] = stats.nbinom.sf(2, r, r / (r + sortie["mu_3_manches"])).round(3)
     sortie["date"] = sortie["date"].dt.date
     sortie["predit_le"] = datetime.now().strftime("%Y-%m-%d %H:%M")
 
     affichage = sortie.rename(columns={
         "home_team": "domicile", "away_team": "extérieur",
         "home_principal_nom": "lanceur dom.", "away_principal_nom": "lanceur ext.",
-        "proba_point_manche_1": "1 pt manche 1", "proba_plus_8_5": "+8,5 pts"})
-    print(affichage.drop(columns=["gamePk", "date", "predit_le"]).to_string(index=False))
+        "proba_point_manche_1": "1 pt manche 1", "proba_plus_8_5": "+8,5 pts",
+        "proba_3m_plus_2_5": "3 manches +2,5"})
+    print(affichage.drop(columns=["gamePk", "date", "predit_le", "mu_3_manches", "r_3_manches"]).to_string(index=False))
+    print("Probabilité pour une autre ligne des 3 premières manches : "
+          "python Baseball/proba_ligne.py ÉQUIPE LIGNE  (ex. Yankees 3.5)")
 
     # Enregistrement : une prédiction par match (la plus récente, faite avant le match)
     FICHIER_PREDICTIONS.parent.mkdir(parents=True, exist_ok=True)
