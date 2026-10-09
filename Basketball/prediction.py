@@ -14,6 +14,7 @@ from Sources.outils import DOSSIER_TRAITEES, RACINE, arguments, etape, modele_sa
 
 FICHIER_PREDICTIONS = RACINE / "Données" / "Prédictions" / "basketball_predictions.csv"
 CIBLES = {"total_q1": "1er quart-temps", "total_mi_temps": "Mi-temps", "total_match": "Match"}
+MATCHS_AVANT_FIABILITE = 5
 NON_VARIABLES = {"game_id", "home_team_id", "away_team_id", "annee_saison"} | set(CIBLES)
 PARAMS = dict(learning_rate=0.02, num_leaves=15, min_child_samples=100, subsample=0.8,
               subsample_freq=1, colsample_bytree=0.5, reg_lambda=5, verbose=-1)
@@ -117,14 +118,21 @@ def main():
         prevu = pd.Series(modele["modele"].predict(a_predire[colonnes]), index=a_predire.index)
         sortie[f"prevu_{cible}"] = sortie["game_id"].map(prevu).round(1)
         sortie[f"sigma_{cible}"] = round(modele["sigma"], 1)
+    # Mesuré sur 2023-2026 : pendant les 4 premiers matchs d'une équipe, le modèle ne fait
+    # presque pas mieux que la moyenne de la ligue (les effectifs ont changé pendant l'été)
+    deja_joues = a_predire[["home_matchs_joues_saison", "away_matchs_joues_saison"]].min(axis=1)
+    sortie["debut_saison"] = sortie["game_id"].map(deja_joues < MATCHS_AVANT_FIABILITE).astype(bool)
     sortie["date"] = pd.to_datetime(sortie["date"]).dt.date
     sortie["predit_le"] = datetime.now().strftime("%Y-%m-%d %H:%M")
 
-    print(sortie.rename(columns={
+    affichage = sortie.rename(columns={
         "home_team_abbr": "domicile", "away_team_abbr": "extérieur",
-        "prevu_total_q1": "1er QT", "prevu_total_mi_temps": "Mi-temps",
-        "prevu_total_match": "Match"})[["domicile", "extérieur", "1er QT", "Mi-temps", "Match"]]
-        .to_string(index=False))
+        "prevu_total_q1": "1er QT", "prevu_total_mi_temps": "Mi-temps", "prevu_total_match": "Match"})
+    affichage["fiabilité"] = affichage["debut_saison"].map({True: "prudence", False: ""})
+    print(affichage[["domicile", "extérieur", "1er QT", "Mi-temps", "Match", "fiabilité"]].to_string(index=False))
+    if sortie["debut_saison"].any():
+        print(f"« prudence » : une des équipes a joué moins de {MATCHS_AVANT_FIABILITE} matchs cette saison, "
+              "le modèle connaît mal sa forme actuelle.")
     print("Probabilité pour une ligne de bookmaker : python Basketball/proba_ligne.py ÉQUIPE MARCHÉ LIGNE"
           "  (ex. BOS match 220.5)")
 

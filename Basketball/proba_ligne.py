@@ -39,6 +39,8 @@ def main():
     print(f"Total prévu : {prevu:.1f} points (erreur habituelle : ±{sigma:.0f})")
     print(f"Plus de {ligne}  : {plus:.0%}")
     print(f"Moins de {ligne} : {1 - plus:.0%}")
+    if m.get("debut_saison") is True or str(m.get("debut_saison")) == "True":
+        print("Prudence : début de saison, une des équipes a joué moins de 5 matchs. Probabilité peu fiable.")
 
 
 if __name__ == "__main__":
