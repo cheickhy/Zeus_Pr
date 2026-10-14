@@ -10,11 +10,16 @@ from Sources.outils import RACINE  # noqa: E402
 
 FICHIER_PREDICTIONS = RACINE / "Données" / "Prédictions" / "basketball_predictions.csv"
 MARCHES = {"q1": ("total_q1", "1er quart-temps"), "mt": ("total_mi_temps", "mi-temps"),
-           "match": ("total_match", "match complet")}
+           "match": ("total_match", "match complet"),
+           # Points de l'équipe nommée seulement (pas le total des deux équipes)
+           "equipe-q1": ("q1", "1er quart-temps, points de l'équipe"),
+           "equipe-mt": ("mi_temps", "mi-temps, points de l'équipe"),
+           "equipe-match": ("match", "match complet, points de l'équipe")}
 
 UTILISATION = """Utilisation : python Basketball/proba_ligne.py ÉQUIPE MARCHÉ LIGNE
   ÉQUIPE : abréviation de l'une des deux équipes (ex. BOS, LAL, NYK)
-  MARCHÉ : q1 (1er quart-temps), mt (mi-temps) ou match
+  MARCHÉ : q1 (1er quart-temps), mt (mi-temps) ou match : total des deux équipes
+           equipe-q1, equipe-mt ou equipe-match : points de l'équipe nommée seulement
   LIGNE  : ligne du bookmaker (ex. 220.5)
 Exemple : python Basketball/proba_ligne.py BOS match 220.5"""
 
@@ -33,6 +38,13 @@ def main():
         print(f"Aucune prédiction pour {equipe}.")
         return
     m = match.iloc[-1]   # match le plus récent prédit pour cette équipe
+    if sys.argv[2].startswith("equipe-"):
+        camp = "dom" if m["home_team_abbr"] == equipe else "ext"
+        cible = f"equipe_{camp}_{cible}"
+        nom = f"{nom} ({equipe})"
+        if f"prevu_{cible}" not in m or pd.isna(m[f"prevu_{cible}"]):
+            print("Ce match a été prédit avant l'ajout des points par équipe. Relance le programme de prédiction.")
+            return
     prevu, sigma = m[f"prevu_{cible}"], m[f"sigma_{cible}"]
     plus = 1 - stats.norm.cdf((ligne - prevu) / sigma)
     print(f"{m['home_team_abbr']} - {m['away_team_abbr']} du {m['date'].date()}, {nom}")

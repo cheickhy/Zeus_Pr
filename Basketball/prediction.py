@@ -15,7 +15,10 @@ from Sources.outils import DOSSIER_TRAITEES, RACINE, arguments, etape, modele_sa
 FICHIER_PREDICTIONS = RACINE / "Données" / "Prédictions" / "basketball_predictions.csv"
 CIBLES = {"total_q1": "1er quart-temps", "total_mi_temps": "Mi-temps", "total_match": "Match"}
 MATCHS_AVANT_FIABILITE = 5
-NON_VARIABLES = {"game_id", "home_team_id", "away_team_id", "annee_saison"} | set(CIBLES)
+CIBLES_EQUIPES = {f"equipe_{c}_{p}": f"{camp}, {periode}"
+                  for c, camp in [("dom", "Équipe dom."), ("ext", "Équipe ext.")]
+                  for p, periode in [("q1", "1er QT"), ("mi_temps", "mi-temps"), ("match", "match")]}
+NON_VARIABLES = {"game_id", "home_team_id", "away_team_id", "annee_saison"} | set(CIBLES) | set(CIBLES_EQUIPES)
 PARAMS = dict(learning_rate=0.02, num_leaves=15, min_child_samples=100, subsample=0.8,
               subsample_freq=1, colsample_bytree=0.5, reg_lambda=5, verbose=-1)
 
@@ -58,10 +61,22 @@ def entrainer(histo, colonnes, cible):
     return {"modele": final.fit(histo[colonnes], histo[cible]), "sigma": sigma}
 
 
+def resultats(matchs):
+    """Résultats réels : totaux du match et points de chaque équipe."""
+    r = matchs[["game_id"] + list(CIBLES)].copy()
+    for c, camp in [("dom", "home"), ("ext", "away")]:
+        r[f"equipe_{c}_q1"] = matchs[f"{camp}_pts_q1"]
+        r[f"equipe_{c}_mi_temps"] = matchs[f"{camp}_pts_q1"] + matchs[f"{camp}_pts_q2"]
+        r[f"equipe_{c}_match"] = matchs[f"{camp}_pts_total"]
+    return r
+
+
 def comparer(tableau, titre):
     """Écart moyen entre prédictions et résultats réels."""
     print(titre)
-    for cible, nom in CIBLES.items():
+    for cible, nom in {**CIBLES, **CIBLES_EQUIPES}.items():
+        if f"prevu_{cible}" not in tableau:      # prédictions faites avant l'ajout des points par équipe
+            continue
         ecart = (tableau[f"prevu_{cible}"] - tableau[cible]).abs().mean()
         print(f"  {nom:16s} : écart moyen de {ecart:.1f} points sur {len(tableau)} matchs")
 
@@ -72,7 +87,7 @@ def bilan(matchs):
         print("Aucune prédiction enregistrée pour l'instant.")
         return
     pred = pd.read_csv(FICHIER_PREDICTIONS)
-    joues = pred.merge(matchs[["game_id"] + list(CIBLES)], on="game_id", how="inner")
+    joues = pred.merge(resultats(matchs), on="game_id", how="inner")
     print(f"Prédictions enregistrées : {len(pred)} | matchs déjà joués : {len(joues)}")
     if len(joues):
         comparer(joues, "Résultats :")
@@ -111,7 +126,7 @@ def main():
 
     etape("Modèles (réutilisés s'ils ont moins de 7 jours), puis prédiction")
     sortie = futurs[["game_id", "date", "home_team_abbr", "away_team_abbr"]].copy()
-    for cible in CIBLES:
+    for cible in list(CIBLES) + list(CIBLES_EQUIPES):
         modele = modele_sauvegarde(f"basket_{cible}", colonnes,
                                    lambda cible=cible: entrainer(histo, colonnes, cible),
                                    reutiliser=not (demonstration or reentrainer))
@@ -127,18 +142,20 @@ def main():
 
     affichage = sortie.rename(columns={
         "home_team_abbr": "domicile", "away_team_abbr": "extérieur",
-        "prevu_total_q1": "1er QT", "prevu_total_mi_temps": "Mi-temps", "prevu_total_match": "Match"})
+        "prevu_total_q1": "1er QT", "prevu_total_mi_temps": "Mi-temps", "prevu_total_match": "Match",
+        "prevu_equipe_dom_match": "Pts dom.", "prevu_equipe_ext_match": "Pts ext."})
     affichage["fiabilité"] = affichage["debut_saison"].map({True: "prudence", False: ""})
-    print(affichage[["domicile", "extérieur", "1er QT", "Mi-temps", "Match", "fiabilité"]].to_string(index=False))
+    print(affichage[["domicile", "extérieur", "1er QT", "Mi-temps", "Match", "Pts dom.", "Pts ext.",
+                     "fiabilité"]].to_string(index=False))
     if sortie["debut_saison"].any():
         print(f"« prudence » : une des équipes a joué moins de {MATCHS_AVANT_FIABILITE} matchs cette saison, "
               "le modèle connaît mal sa forme actuelle.")
     print("Probabilité pour une ligne de bookmaker : python Basketball/proba_ligne.py ÉQUIPE MARCHÉ LIGNE"
-          "  (ex. BOS match 220.5)")
+          "  (ex. BOS match 220.5 ou BOS equipe-match 110.5)")
 
     if demonstration:
         print()
-        comparer(sortie.merge(reels[["game_id"] + list(CIBLES)], on="game_id"),
+        comparer(sortie.merge(resultats(reels), on="game_id"),
                  "Comparaison avec les vrais résultats de ce jour-là :")
         print("\nDémonstration : rien n'a été enregistré.")
         return

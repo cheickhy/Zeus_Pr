@@ -14,6 +14,8 @@ STATS_EQUIPE = ["pts", "pts_encaisses", "pts_q1", "enc_q1", "pts_mt", "enc_mt",
                 "fga_adv", "fg3a_adv", "fta_adv", "pf_adv"]
 
 CIBLES = ["total_q1", "total_mi_temps", "total_match"]
+# Points de chaque équipe (paris « total d'une équipe ») : cibles, JAMAIS variables d'entrée
+CIBLES_EQUIPES = [f"equipe_{c}_{p}" for c in ("dom", "ext") for p in ("q1", "mi_temps", "match")]
 
 
 def possessions(df, camp):
@@ -97,6 +99,10 @@ def construire(df):
     sortie["mois"] = sortie["date"].dt.month
     # Première année de la saison ("2008-09" -> 2008), utile pour découper dans le temps
     sortie["annee_saison"] = sortie["season"].str[:4].astype(int)
+    for c, camp in [("dom", "home"), ("ext", "away")]:
+        sortie[f"equipe_{c}_q1"] = df[f"{camp}_pts_q1"]
+        sortie[f"equipe_{c}_mi_temps"] = df[f"{camp}_pts_q1"] + df[f"{camp}_pts_q2"]
+        sortie[f"equipe_{c}_match"] = df[f"{camp}_pts_total"]
 
     assert sortie["game_id"].is_unique and len(sortie) == len(df)
     return sortie

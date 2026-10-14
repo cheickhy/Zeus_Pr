@@ -18,7 +18,8 @@ FIN_APPRENTISSAGE = 2021   # saison 2021-22
 SAISON_REGLAGE = 2022      # saison 2022-23
 
 NON_VARIABLES = {"game_id", "home_team_id", "away_team_id", "annee_saison",
-                 "total_q1", "total_mi_temps", "total_match"}
+                 "total_q1", "total_mi_temps", "total_match"} | {
+    f"equipe_{c}_{p}" for c in ("dom", "ext") for p in ("q1", "mi_temps", "match")}
 
 # Cible -> suffixes des colonnes « points marqués / encaissés » correspondantes
 CIBLES = {
