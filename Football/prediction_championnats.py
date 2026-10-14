@@ -6,7 +6,9 @@ from datetime import date, datetime
 from pathlib import Path
 
 import lightgbm as lgb
+import numpy as np
 import pandas as pd
+from scipy import optimize, stats
 from sklearn.metrics import accuracy_score, log_loss
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -27,6 +29,9 @@ MARCHES = {
     "proba_plus_24_5_fautes": ("+24,5 fautes", "total_fautes", 24.5),
     "proba_plus_3_5_jaunes": ("+3,5 jaunes", "total_cartons_jaunes", 3.5),
 }
+# Modèles de comptage : nombre attendu + dispersion -> probabilité pour n'importe quelle ligne
+COMPTAGES = {"buts": "total_buts", "corners": "total_corners", "fautes": "total_fautes",
+             "jaunes": "total_cartons_jaunes"}
 NON_VARIABLES = set(variables.CIBLES) | {"match", "annee_saison"}
 PARAMS = dict(learning_rate=0.02, num_leaves=31, min_child_samples=200, subsample=0.8,
               subsample_freq=1, colsample_bytree=0.5, reg_lambda=5, verbose=-1)
@@ -55,6 +60,23 @@ def entrainer(histo, colonnes, cible, ligne):
         d.loc[app, colonnes], y[app], eval_X=(d.loc[reg, colonnes],), eval_y=(y[reg],),
         callbacks=[lgb.early_stopping(100, verbose=False)])
     return lgb.LGBMClassifier(n_estimators=max(essai.best_iteration_, 50), **PARAMS).fit(d[colonnes], y)
+
+
+def entrainer_comptage(histo, colonnes, cible):
+    """Nombre moyen attendu (LightGBM, objectif Poisson) + dispersion r de la binomiale négative,
+    réglés sur la dernière saison complète, puis réentraînement sur tout l'historique."""
+    d = histo.dropna(subset=[cible])
+    derniere = d["annee_saison"].max() - 1
+    app, reg = d[d["annee_saison"] < derniere], d[d["annee_saison"] == derniere]
+    params = {**PARAMS, "objective": "poisson"}
+    essai = lgb.LGBMRegressor(n_estimators=3000, **params).fit(
+        app[colonnes], app[cible], eval_X=(reg[colonnes],), eval_y=(reg[cible],),
+        callbacks=[lgb.early_stopping(100, verbose=False)])
+    mu = essai.predict(reg[colonnes])
+    nll = lambda lr: -stats.nbinom.logpmf(reg[cible], np.exp(lr), np.exp(lr) / (np.exp(lr) + mu)).sum()
+    r = float(np.exp(optimize.minimize_scalar(nll, bounds=(-2, 9), method="bounded").x))
+    final = lgb.LGBMRegressor(n_estimators=max(essai.best_iteration_, 50), **params).fit(d[colonnes], d[cible])
+    return {"modele": final, "r": r}
 
 
 def comparer(tableau, titre):
@@ -125,11 +147,19 @@ def main():
                                    lambda cible=cible, ligne=ligne: entrainer(histo, colonnes, cible, ligne),
                                    reutiliser=not (demonstration or reentrainer))
         sortie[col] = modele.predict_proba(a_predire[colonnes])[:, 1].round(3)
+    for nom, cible in COMPTAGES.items():
+        comptage = modele_sauvegarde(f"football_comptage_{nom}", colonnes,
+                                     lambda cible=cible: entrainer_comptage(histo, colonnes, cible),
+                                     reutiliser=not (demonstration or reentrainer))
+        sortie[f"mu_{nom}"] = comptage["modele"].predict(a_predire[colonnes]).round(3)
+        sortie[f"r_{nom}"] = round(comptage["r"], 2)
     sortie["predit_le"] = datetime.now().strftime("%Y-%m-%d %H:%M")
 
     affichage = sortie.rename(columns={c: n for c, (n, _, _) in MARCHES.items()})
     affichage["date"] = affichage["date"].dt.strftime("%d/%m")
-    print(affichage.drop(columns=["code", "championnat", "predit_le"]).to_string(index=False))
+    print(affichage[["date", "home_team", "away_team"] + [n for n, _, _ in MARCHES.values()]].to_string(index=False))
+    print("Probabilité pour une autre ligne : python Football/proba_ligne.py ÉQUIPE MARCHÉ LIGNE"
+          "  (ex. Barcelona corners 10.5)")
 
     if demonstration:
         print()
