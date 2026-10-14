@@ -39,12 +39,19 @@ def code_saison(annee):
     return f"{annee % 100:02d}{(annee + 1) % 100:02d}"
 
 
-def telecharger(url, essais=3):
+def telecharger(url, essais=3, delai_max=60):
     for i in range(essais):
         try:
             requete = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-            with urllib.request.urlopen(requete, timeout=30) as r:
-                return r.read()
+            debut, morceaux = time.time(), []
+            with urllib.request.urlopen(requete, timeout=20) as r:
+                # Lecture par morceaux avec une durée maximale : un site qui envoie les données
+                # au compte-gouttes ne déclenche jamais le simple délai d'attente (blocage du 13/10)
+                while morceau := r.read(65536):
+                    morceaux.append(morceau)
+                    if time.time() - debut > delai_max:
+                        raise TimeoutError(f"téléchargement trop lent (plus de {delai_max} s)")
+            return b"".join(morceaux)
         except urllib.error.HTTPError as e:
             if e.code == 404:        # saison ou championnat absent du site
                 return None
@@ -60,14 +67,20 @@ def main():
     print("=== TÉLÉCHARGEMENT FOOTBALL (football-data.co.uk) ===")
     DOSSIER.mkdir(parents=True, exist_ok=True)
     en_cours = saison_en_cours()
-    nouveaux, absents = 0, 0
+    nouveaux, absents, echecs = 0, 0, 0
     for code, nom in CHAMPIONNATS.items():
         etape(nom)
         for annee in range(PREMIERE_SAISON, en_cours + 1):
             fichier = DOSSIER / f"{code}_{code_saison(annee)}.csv"
             if fichier.exists() and annee < en_cours:
                 continue                     # saison terminée déjà téléchargée
-            contenu = telecharger(URL.format(saison=code_saison(annee), code=code))
+            try:
+                contenu = telecharger(URL.format(saison=code_saison(annee), code=code))
+            except Exception as e:
+                # On garde la version déjà présente plutôt que de tout arrêter
+                echecs += 1
+                print(f"Échec pour {fichier.name} ({e}) : ancienne version conservée")
+                continue
             if not contenu:
                 absents += 1
                 continue
@@ -75,7 +88,8 @@ def main():
             nouveaux += 1
             time.sleep(0.3)                  # on ménage le site
         print(f"{len(list(DOSSIER.glob(f'{code}_*.csv')))} saisons disponibles")
-    print(f"\nFichiers téléchargés ou mis à jour : {nouveaux} | saisons absentes du site : {absents}")
+    print(f"\nFichiers téléchargés ou mis à jour : {nouveaux} | saisons absentes du site : {absents}"
+          + (f" | ÉCHECS : {echecs} (relancer plus tard pour les résultats les plus récents)" if echecs else ""))
 
 
 if __name__ == "__main__":
