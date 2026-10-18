@@ -127,6 +127,14 @@ def main():
     else:
         futurs = prochains_matchs()
         futurs = futurs[futurs["date"] >= pd.Timestamp(jour)]
+        # Un match déjà commencé ne compte pas comme test réel : on l'écarte
+        # (heures du site = heure de Londres ; sans heure connue, on garde le match)
+        coup_envoi = pd.to_datetime(futurs["date"].dt.strftime("%Y-%m-%d") + " " + futurs["heure"].fillna("23:59"),
+                                    errors="coerce").dt.tz_localize("Europe/London", ambiguous="NaT", nonexistent="NaT")
+        commence = coup_envoi <= pd.Timestamp.now(tz="Europe/London")
+        if commence.any():
+            print(f"Matchs déjà commencés, écartés : {int(commence.sum())}")
+        futurs = futurs[~commence]
     if futurs.empty:
         print("Aucun match à prédire.")
         return
