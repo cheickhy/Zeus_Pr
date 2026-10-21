@@ -1,4 +1,4 @@
-"""Export des prédictions des trois sports dans un fichier JSON destiné à l'application."""
+﻿"""Export des prédictions des trois sports dans un fichier JSON destiné à l'application."""
 import json
 import sys
 from datetime import date, datetime
@@ -79,6 +79,22 @@ def selections(depuis):
     return fiches
 
 
+def coupes(depuis):
+    """Ligue des champions : seuls le résultat et les cartons jaunes sont assez fiables pour être livrés."""
+    fiches = []
+    for _, m in lire("coupes_predictions.csv", depuis).iterrows():
+        fiches.append({"sport": "football_coupes", "competition": "Ligue des champions",
+                       "date": m["date"].date().isoformat(), "heure_utc": m["heure_utc"],
+                       "domicile": m["home_team"], "exterieur": m["away_team"],
+                       "marches": {"resultat": {"victoire_domicile": arrondi(m["proba_domicile"]),
+                                                "nul": arrondi(m["proba_nul"]),
+                                                "victoire_exterieur": arrondi(m["proba_exterieur"])},
+                                   "jaunes": {"nombre_attendu": arrondi(m["mu_jaunes"]),
+                                              "lignes": lignes_nbinom(m["mu_jaunes"], m["r_jaunes"], LIGNES_FOOT["jaunes"])}},
+                       "avertissement": None, "predit_le": m["predit_le"]})
+    return fiches
+
+
 def basket(depuis):
     cibles = {"total_q1": "total_1er_quart_temps", "total_mi_temps": "total_mi_temps", "total_match": "total_match",
               "equipe_dom_q1": "domicile_1er_quart_temps", "equipe_dom_mi_temps": "domicile_mi_temps",
@@ -113,7 +129,7 @@ def baseball(depuis):
 def main():
     """Par défaut : matchs d'aujourd'hui et à venir. Option --exemple : dernière journée prédite de chaque sport."""
     depuis = "dernier_jour" if "--exemple" in sys.argv else date.today().isoformat()
-    matchs = football(depuis) + selections(depuis) + basket(depuis) + baseball(depuis)
+    matchs = football(depuis) + selections(depuis) + coupes(depuis) + basket(depuis) + baseball(depuis)
     contenu = {"genere_le": datetime.now().strftime("%Y-%m-%d %H:%M"), "version_format": 1,
                "explication": "proba_plus = probabilité que le total dépasse la ligne (ex. ligne 2.5 = 3 buts ou plus). "
                               "La probabilité de « moins » vaut 1 - proba_plus.",
