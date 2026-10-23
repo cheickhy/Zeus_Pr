@@ -27,7 +27,7 @@ def sauvegarder(df, nom_fichier):
 
 
 def etape(message):
-    print(f"\n--> {message}")
+    print(f"\n{message}")
 
 
 def arguments():
