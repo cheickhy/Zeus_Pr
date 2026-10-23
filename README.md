@@ -66,6 +66,18 @@ puis les nouvelles prédictions. Les modèles sont réentraînés automatiquemen
 (option `--reentrainer` pour forcer). Une date passée en argument lance une **démonstration** :
 `python Basketball/prediction.py 2026-03-15`.
 
+## Bilan détaillé, match par match
+
+```
+python Sources/bilan.py               # tous les sports, matchs joués ces 7 derniers jours
+python Sources/bilan.py football 3    # un sport, 3 derniers jours
+```
+
+Pour chaque match joué : la prédiction, le résultat réel et ✓ / ✗ par marché. Exemple :
+`plus 68% → 3 ✓` = le modèle annonçait « plus de 2,5 buts » à 68 %, il y a eu 3 buts, c'est juste.
+Tous les matchs sont aussi enregistrés dans `Données/Prédictions/bilan_detaille.csv` (Excel).
+Lancer d'abord le programme de prédiction du sport : c'est lui qui télécharge les résultats.
+
 ## Probabilité pour une ligne de bookmaker
 
 ```
