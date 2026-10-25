@@ -52,6 +52,18 @@ enregistrées **avant** les matchs).
 
 ## Utilisation quotidienne
 
+**Une seule commande par jour, de préférence entre 14 h et 17 h GMT :**
+
+```
+python Sources/tout_lancer.py
+```
+
+Elle lance tous les sports (ceux hors saison sont sautés), puis l'export pour l'application.
+Si un sport échoue (coupure internet), les autres continuent et le résumé final indique quoi relancer.
+Journal détaillé de chaque lancement : `Données/Prédictions/journal/`.
+
+Les programmes peuvent aussi être lancés un par un :
+
 | Quand (heure GMT) | Commande | Rôle |
 |---|---|---|
 | Tous les jours, 8 h - 20 h | `python Basketball/prediction.py` | Matchs NBA de la nuit + bilan |
