@@ -121,7 +121,7 @@ def basket():
                         "match": m["home_team_abbr"] + " - " + m["away_team_abbr"],
                         "score": m["home_pts_total"].astype(int).astype(str) + "-" + m["away_pts_total"].astype(int).astype(str)})
     for nom, prevu, vrai in [("1er QT", "prevu_total_q1", "total_q1"), ("mi-temps", "prevu_total_mi_temps", "total_mi_temps"),
-                             ("match", "prevu_total_match", "total_match")]:
+                             ("total match", "prevu_total_match", "total_match")]:
         res[nom] = [f"prévu {a:.0f} → {b:.0f} (écart {b - a:+.0f})" for a, b in zip(m[prevu], m[vrai])]
     return res
 
