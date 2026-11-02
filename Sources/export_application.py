@@ -126,17 +126,41 @@ def baseball(depuis):
     return fiches
 
 
+def ajouter_proba_moins(matchs):
+    """Ajoute « proba_moins » à chaque ligne de chaque marché, pour que l'application n'ait aucun calcul à faire."""
+    for m in matchs:
+        for marche in m["marches"].values():
+            for ligne in marche.get("lignes", []) if isinstance(marche, dict) else []:
+                plus = ligne.get("proba_plus")
+                ligne["proba_moins"] = None if plus is None else round(1 - plus, 3)
+    return matchs
+
+
+# Un fichier par sport, en plus du fichier commun (sport du fichier -> valeurs du champ « sport »)
+FICHIERS_PAR_SPORT = {"predictions_football.json": {"football", "football_coupes", "football_selections"},
+                      "predictions_basket.json": {"basket"},
+                      "predictions_baseball.json": {"baseball"}}
+
+
+def ecrire(chemin, matchs):
+    contenu = {"genere_le": datetime.now().strftime("%Y-%m-%d %H:%M"), "version_format": 2,
+               "explication": "proba_plus = probabilité que le total dépasse la ligne (ex. ligne 2.5 = 3 buts ou plus). "
+                              "proba_moins = probabilité que le total reste en dessous (ex. ligne 2.5 = 0, 1 ou 2 buts).",
+               "nombre_de_matchs": len(matchs), "matchs": matchs}
+    chemin.write_text(json.dumps(contenu, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
 def main():
     """Par défaut : matchs d'aujourd'hui et à venir. Option --exemple : dernière journée prédite de chaque sport."""
     depuis = "dernier_jour" if "--exemple" in sys.argv else date.today().isoformat()
-    matchs = football(depuis) + selections(depuis) + coupes(depuis) + basket(depuis) + baseball(depuis)
-    contenu = {"genere_le": datetime.now().strftime("%Y-%m-%d %H:%M"), "version_format": 1,
-               "explication": "proba_plus = probabilité que le total dépasse la ligne (ex. ligne 2.5 = 3 buts ou plus). "
-                              "La probabilité de « moins » vaut 1 - proba_plus.",
-               "nombre_de_matchs": len(matchs), "matchs": matchs}
-    SORTIE.write_text(json.dumps(contenu, ensure_ascii=False, indent=2), encoding="utf-8")
+    matchs = ajouter_proba_moins(football(depuis) + selections(depuis) + coupes(depuis) + basket(depuis) + baseball(depuis))
+    ecrire(SORTIE, matchs)
     par_sport = pd.Series([m["sport"] for m in matchs]).value_counts().to_dict() if matchs else {}
     print(f"{len(matchs)} matchs exportés {par_sport} -> {SORTIE}")
+    for nom, sports in FICHIERS_PAR_SPORT.items():
+        selection = [m for m in matchs if m["sport"] in sports]
+        ecrire(DOSSIER / nom, selection)
+        print(f"   {nom} : {len(selection)} matchs")
 
 
 if __name__ == "__main__":
