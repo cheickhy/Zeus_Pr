@@ -5,7 +5,7 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from Sources.outils import (DOSSIER_TRAITEES, etape, moyenne_precedente,  # noqa: E402
+from Sources.outils import (DOSSIER_TRAITEES, etape, moyenne_precedente,
                             sauvegarder, somme_precedente)
 
 FENETRES_EQUIPE = [10, 30]      # nombre de matchs précédents de l'équipe

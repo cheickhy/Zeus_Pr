@@ -5,7 +5,7 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from Sources.outils import DOSSIER_BRUTES, etape, sauvegarder  # noqa: E402
+from Sources.outils import DOSSIER_BRUTES, etape, sauvegarder
 
 DOSSIER = DOSSIER_BRUTES / "selections"
 PREMIERE_ANNEE = 1990        # le football d'avant 1990 apporte peu pour prédire aujourd'hui

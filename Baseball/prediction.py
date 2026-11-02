@@ -17,7 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import mise_a_jour  
 import nettoyage  
 import variables  
-from Sources.outils import DOSSIER_TRAITEES, RACINE, arguments, etape, modele_sauvegarde  # noqa: E402
+from Sources.outils import DOSSIER_TRAITEES, RACINE, arguments, etape, modele_sauvegarde
 
 FICHIER_PREDICTIONS = RACINE / "Données" / "Prédictions" / "baseball_predictions.csv"
 

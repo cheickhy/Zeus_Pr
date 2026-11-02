@@ -6,10 +6,10 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import elo_clubs  # noqa: E402
+import elo_clubs
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from dates_sofascore import ressemblance  # noqa: E402
-from Sources.outils import DOSSIER_BRUTES, DOSSIER_TRAITEES, etape, moyenne_precedente, sauvegarder  # noqa: E402
+from dates_sofascore import ressemblance
+from Sources.outils import DOSSIER_BRUTES, DOSSIER_TRAITEES, etape, moyenne_precedente, sauvegarder
 
 FICHIER_COUPES = DOSSIER_BRUTES / "coupes" / "coupes_matchs.csv"
 STATS = ["buts", "tirs", "tirs_cadres", "corners", "fautes", "jaunes"]

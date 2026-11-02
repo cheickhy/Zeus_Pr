@@ -10,7 +10,7 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from Sources.outils import BRUT_MLB, etape  # noqa: E402
+from Sources.outils import BRUT_MLB, etape
 
 API = "https://statsapi.mlb.com/api/v1"
 DOSSIER_MAJ = BRUT_MLB.parent / "mise_a_jour"

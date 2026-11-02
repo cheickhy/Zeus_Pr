@@ -5,7 +5,7 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from Sources.outils import DOSSIER_TRAITEES, RACINE  # noqa: E402
+from Sources.outils import DOSSIER_TRAITEES, RACINE
 
 PREDICTIONS = RACINE / "Données" / "Prédictions"
 SORTIE = PREDICTIONS / "bilan_detaille.csv"

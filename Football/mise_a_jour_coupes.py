@@ -10,7 +10,7 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from Sources.outils import DOSSIER_BRUTES, etape  # noqa: E402
+from Sources.outils import DOSSIER_BRUTES, etape
 
 API = "https://site.api.espn.com/apis/site/v2/sports/soccer/{}"
 COMPETITIONS = {"uefa.champions": "Ligue des champions"}

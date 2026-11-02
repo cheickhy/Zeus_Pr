@@ -12,7 +12,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from Sources.outils import DOSSIER_TRAITEES, etape  # noqa: E402
+from Sources.outils import DOSSIER_TRAITEES, etape
 
 DEBUT, FIN_APPRENTISSAGE, FIN_REGLAGE = 2000, 2019, 2021
 NON_VARIABLES = {"home_score", "away_score", "total_buts", "match", "annee"}

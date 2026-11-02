@@ -13,7 +13,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from Sources.outils import DOSSIER_TRAITEES, etape  # noqa: E402
+from Sources.outils import DOSSIER_TRAITEES, etape
 
 FIN_APPRENTISSAGE, SAISON_REGLAGE = 2022, 2023      # test : saisons 2024-25 et suivantes
 LIGNES = {"total_buts": [1.5, 2.5, 3.5], "total_corners": [8.5, 9.5, 10.5],

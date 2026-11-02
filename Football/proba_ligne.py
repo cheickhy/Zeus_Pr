@@ -6,7 +6,7 @@ import pandas as pd
 from scipy import stats
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from Sources.outils import RACINE  # noqa: E402
+from Sources.outils import RACINE
 
 FICHIER_PREDICTIONS = RACINE / "Données" / "Prédictions" / "football_predictions.csv"
 MARCHES = {"buts": "buts", "corners": "corners", "fautes": "fautes", "jaunes": "cartons jaunes"}

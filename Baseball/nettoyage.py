@@ -8,7 +8,7 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from Sources.outils import BRUT_MLB, sauvegarder, etape  # noqa: E402
+from Sources.outils import BRUT_MLB, sauvegarder, etape
 
 COLS_LANCEURS = ["outs", "hits", "runs", "earned_runs", "bb", "so", "hr",
                  "pitch_count", "batters_faced"]

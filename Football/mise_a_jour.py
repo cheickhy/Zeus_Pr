@@ -7,7 +7,7 @@ from datetime import date
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from Sources.outils import DOSSIER_BRUTES, etape  # noqa: E402
+from Sources.outils import DOSSIER_BRUTES, etape
 
 URL = "https://www.football-data.co.uk/mmz4281/{saison}/{code}.csv"
 DOSSIER = DOSSIER_BRUTES / "football_data"

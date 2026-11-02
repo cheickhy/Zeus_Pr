@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from Sources.outils import BRUT_SOFASCORE, DOSSIER_TRAITEES  # noqa: E402
+from Sources.outils import BRUT_SOFASCORE, DOSSIER_TRAITEES
 
 FICHIER_BRUT = BRUT_SOFASCORE
 DOSSIER_SORTIE = DOSSIER_TRAITEES / "sofascore"

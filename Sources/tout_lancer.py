@@ -7,7 +7,7 @@ from datetime import date, datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from Sources.outils import RACINE  # noqa: E402
+from Sources.outils import RACINE
 
 JOURNAL = RACINE / "Données" / "Prédictions" / "journal"
 

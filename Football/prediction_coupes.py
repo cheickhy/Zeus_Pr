@@ -14,10 +14,10 @@ from sklearn.preprocessing import StandardScaler
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-import mise_a_jour_coupes  # noqa: E402
-import variables_coupes  # noqa: E402
-from entrainement_coupes import dispersion, variables_de  # noqa: E402
-from Sources.outils import RACINE, arguments, etape, modele_sauvegarde  # noqa: E402
+import mise_a_jour_coupes
+import variables_coupes
+from entrainement_coupes import dispersion, variables_de
+from Sources.outils import RACINE, arguments, etape, modele_sauvegarde
 
 FICHIER_PREDICTIONS = RACINE / "Données" / "Prédictions" / "coupes_predictions.csv"
 RESULTATS = ["domicile", "nul", "exterieur"]

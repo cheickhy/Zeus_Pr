@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from Sources.outils import (DOSSIER_TRAITEES, etape, moyenne_precedente,  # noqa: E402
+from Sources.outils import (DOSSIER_TRAITEES, etape, moyenne_precedente,
                             sauvegarder)
 
 ELO_DEPART = 1500

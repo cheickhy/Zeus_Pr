@@ -5,8 +5,8 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from Sources.outils import DOSSIER_BRUTES, etape, sauvegarder  # noqa: E402
-from mise_a_jour import CHAMPIONNATS  # noqa: E402
+from Sources.outils import DOSSIER_BRUTES, etape, sauvegarder
+from mise_a_jour import CHAMPIONNATS
 
 DOSSIER = DOSSIER_BRUTES / "football_data"
 

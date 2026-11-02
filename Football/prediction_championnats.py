@@ -13,10 +13,10 @@ from sklearn.metrics import accuracy_score, log_loss
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-import mise_a_jour  # noqa: E402
-import nettoyage_championnats  # noqa: E402
-import variables_championnats as variables  # noqa: E402
-from Sources.outils import DOSSIER_TRAITEES, RACINE, arguments, etape, modele_sauvegarde  # noqa: E402
+import mise_a_jour
+import nettoyage_championnats
+import variables_championnats as variables
+from Sources.outils import DOSSIER_TRAITEES, RACINE, arguments, etape, modele_sauvegarde
 
 FICHIER_PREDICTIONS = RACINE / "Données" / "Prédictions" / "football_predictions.csv"
 URL_PROCHAINS_MATCHS = "https://www.football-data.co.uk/fixtures.csv"

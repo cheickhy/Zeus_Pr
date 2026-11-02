@@ -12,7 +12,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from Sources.outils import DOSSIER_TRAITEES, etape  # noqa: E402
+from Sources.outils import DOSSIER_TRAITEES, etape
 
 FIN_APPRENTISSAGE = 2022
 SAISON_REGLAGE = 2023

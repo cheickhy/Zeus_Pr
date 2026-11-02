@@ -4,7 +4,7 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from Sources.outils import BRUT_NBA, sauvegarder, etape  # noqa: E402
+from Sources.outils import BRUT_NBA, sauvegarder, etape
 
 QT = ["pts_q1", "pts_q2", "pts_q3", "pts_q4", "pts_ot1", "pts_ot2"]
 STATS_JOUEURS = ["fgm", "fga", "fg3m", "fg3a", "ftm", "fta", "oreb", "dreb",

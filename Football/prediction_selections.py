@@ -13,11 +13,11 @@ from sklearn.preprocessing import StandardScaler
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-import mise_a_jour_espn  # noqa: E402
-import mise_a_jour_selections  # noqa: E402
-import nettoyage_selections  # noqa: E402
-import variables_selections as variables  # noqa: E402
-from Sources.outils import DOSSIER_TRAITEES, RACINE, arguments, etape, modele_sauvegarde  # noqa: E402
+import mise_a_jour_espn
+import mise_a_jour_selections
+import nettoyage_selections
+import variables_selections as variables
+from Sources.outils import DOSSIER_TRAITEES, RACINE, arguments, etape, modele_sauvegarde
 
 FICHIER_PREDICTIONS = RACINE / "Données" / "Prédictions" / "selections_predictions.csv"
 CLE = ["date", "home_team", "away_team"]

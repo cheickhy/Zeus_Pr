@@ -7,10 +7,10 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-import mise_a_jour  # noqa: E402
-import nettoyage  # noqa: E402
-import variables  # noqa: E402
-from Sources.outils import DOSSIER_TRAITEES, RACINE, arguments, etape, modele_sauvegarde  # noqa: E402
+import mise_a_jour
+import nettoyage
+import variables
+from Sources.outils import DOSSIER_TRAITEES, RACINE, arguments, etape, modele_sauvegarde
 
 FICHIER_PREDICTIONS = RACINE / "Données" / "Prédictions" / "basketball_predictions.csv"
 CIBLES = {"total_q1": "1er quart-temps", "total_mi_temps": "Mi-temps", "total_match": "Match"}

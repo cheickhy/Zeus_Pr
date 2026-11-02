@@ -11,7 +11,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from Sources.outils import DOSSIER_TRAITEES, etape  # noqa: E402
+from Sources.outils import DOSSIER_TRAITEES, etape
 
 FIN_APPRENTISSAGE = 2021   # saison 2021-22
 SAISON_REGLAGE = 2022      # saison 2022-23

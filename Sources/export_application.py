@@ -9,7 +9,7 @@ import pandas as pd
 from scipy import stats
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from Sources.outils import RACINE  # noqa: E402
+from Sources.outils import RACINE
 
 DOSSIER = RACINE / "Données" / "Prédictions"
 SORTIE = DOSSIER / "predictions_application.json"
