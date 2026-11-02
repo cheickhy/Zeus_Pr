@@ -29,13 +29,13 @@ CHAMPIONNATS = {
 
 
 def saison_en_cours():
-    """Une saison européenne commence en juillet-août : 2026-09 -> 2026."""
+    """Une saison européenne commence en juillet-août : 2026-09 : 2026."""
     aujourd_hui = date.today()
     return aujourd_hui.year if aujourd_hui.month >= 7 else aujourd_hui.year - 1
 
 
 def code_saison(annee):
-    """2025 -> "2526" (format utilisé par le site)."""
+    """2025 : "2526" (format utilisé par le site)."""
     return f"{annee % 100:02d}{(annee + 1) % 100:02d}"
 
 
@@ -64,7 +64,7 @@ def telecharger(url, essais=3, delai_max=60):
 
 
 def main():
-    print("=== TÉLÉCHARGEMENT FOOTBALL (football-data.co.uk) ===")
+    print("TÉLÉCHARGEMENT FOOTBALL (football-data.co.uk)")
     DOSSIER.mkdir(parents=True, exist_ok=True)
     en_cours = saison_en_cours()
     nouveaux, absents, echecs = 0, 0, 0

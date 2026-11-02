@@ -19,7 +19,7 @@ CIBLES = ["total_buts", "total_buts_mt", "total_corners", "total_fautes", "total
 
 
 def pays(code):
-    """E0, E1, EC -> "E" ; SC0 -> "SC" ; D1 -> "D". Une équipe change de division, pas de pays."""
+    """E0, E1, EC : "E" ; SC0 : "SC" ; D1 : "D". Une équipe change de division, pas de pays."""
     return "E" if code == "EC" else re.sub(r"\d+$", "", code)
 
 
@@ -114,7 +114,7 @@ def construire(df):
 
 
 def main():
-    print("=== VARIABLES D'ENTRÉE FOOTBALL : CHAMPIONNATS ===")
+    print("VARIABLES D'ENTRÉE FOOTBALL : CHAMPIONNATS")
     df = pd.read_csv(DOSSIER_TRAITEES / "football_championnats.csv", parse_dates=["date"], low_memory=False)
     sauvegarder(construire(df), "football_championnats_variables.csv")
 

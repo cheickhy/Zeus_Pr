@@ -156,7 +156,7 @@ def main():
     matchs = ajouter_proba_moins(football(depuis) + selections(depuis) + coupes(depuis) + basket(depuis) + baseball(depuis))
     ecrire(SORTIE, matchs)
     par_sport = pd.Series([m["sport"] for m in matchs]).value_counts().to_dict() if matchs else {}
-    print(f"{len(matchs)} matchs exportés {par_sport} -> {SORTIE}")
+    print(f"{len(matchs)} matchs exportés {par_sport} dans {SORTIE}")
     for nom, sports in FICHIERS_PAR_SPORT.items():
         selection = [m for m in matchs if m["sport"] in sports]
         ecrire(DOSSIER / nom, selection)

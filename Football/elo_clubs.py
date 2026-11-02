@@ -9,12 +9,12 @@ K = {"championnat": 20, "coupe": 30}
 
 
 def flux_de_matchs(champ, coupes, noms):
-    """Tous les matchs dans l'ordre chronologique, avec un nom de club commun aux deux sources."""
+
     c = champ[["date", "home_team", "away_team", "home_buts", "away_buts"]].assign(type="championnat", espn_id=None)
     e = coupes[["date", "home_team", "away_team", "home_buts", "away_buts", "espn_id"]].copy()
     e[["home_team", "away_team"]] = e[["home_team", "away_team"]].replace(noms)
     e["type"] = "coupe"
-    # Le jour même, les matchs de championnat passent avant ceux de coupe (heure inconnue)
+    
     return pd.concat([c, e], ignore_index=True).sort_values(["date", "type"], kind="stable").reset_index(drop=True)
 
 

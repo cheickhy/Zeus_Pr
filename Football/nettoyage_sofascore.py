@@ -35,7 +35,7 @@ IDENTIFIANTS = ["match_id", "home_team", "away_team", "home_score", "away_score"
 
 
 def parse_ratio(valeur):
-    """'34/47 (72%)' -> (34.0, 47.0, 72.0) ; NaN si vide ou format inattendu."""
+    """'34/47 (72%)' : (34.0, 47.0, 72.0) ; NaN si vide ou format inattendu."""
     if pd.isna(valeur):
         return (np.nan, np.nan, np.nan)
     m = re.match(r"\s*(\d+)\s*/\s*(\d+)\s*\((\d+)%\)\s*", str(valeur))
@@ -46,7 +46,7 @@ def parse_ratio(valeur):
 
 
 def parse_pourcentage(valeur):
-    """'58%' -> 58.0 ; NaN si vide ou format inattendu."""
+    """'58%' : 58.0 ; NaN si vide ou format inattendu."""
     if pd.isna(valeur):
         return np.nan
     m = re.match(r"\s*(\d+)%\s*", str(valeur))
@@ -160,7 +160,7 @@ def main():
     print("\nColonnes les moins complètes :")
     print(rapport.head(10).to_string(index=False))
 
-    print("\n⚠ Rappel : aucune colonne date dans les données. Les colonnes "
+    print("\nRappel : aucune colonne date dans les données. Les colonnes "
           "'in-match' (possession, tirs, corners du match, etc.) ne doivent "
           "PAS servir de features pour prédire CE match — seulement comme "
           "matière première pour des moyennes glissantes 'avant-match' une "

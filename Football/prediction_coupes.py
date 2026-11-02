@@ -62,7 +62,7 @@ def bilan(feats):
 
 def main():
     _, reentrainer = arguments()
-    print("=== PRÉDICTIONS : LIGUE DES CHAMPIONS ===")
+    print("PRÉDICTIONS : LIGUE DES CHAMPIONS")
     mise_a_jour_coupes.main()
     coupes, champ = variables_coupes.charger()
     feats, _ = variables_coupes.construire(coupes, champ)

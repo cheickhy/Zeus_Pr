@@ -13,7 +13,7 @@ FICHIERS = ["results.csv",      # un match par ligne
 
 
 def main():
-    print("=== TÉLÉCHARGEMENT DES MATCHS INTERNATIONAUX ===")
+    print("TÉLÉCHARGEMENT DES MATCHS INTERNATIONAUX")
     DOSSIER.mkdir(parents=True, exist_ok=True)
     for nom in FICHIERS:
         requete = urllib.request.Request(URL.format(nom), headers={"User-Agent": "Mozilla/5.0"})

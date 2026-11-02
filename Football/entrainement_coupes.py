@@ -49,7 +49,7 @@ def test_resultat(v, cols):
 
 
 def main():
-    print("=== TEST DES MODÈLES : LIGUE DES CHAMPIONS ===")
+    print("TEST DES MODÈLES : LIGUE DES CHAMPIONS")
     v = pd.read_csv(DOSSIER_TRAITEES / "coupes_variables.csv", low_memory=False)
     cols = variables_de(v)
     test_resultat(v, cols)

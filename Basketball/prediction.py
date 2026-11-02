@@ -24,7 +24,7 @@ PARAMS = dict(learning_rate=0.02, num_leaves=15, min_child_samples=100, subsampl
 
 
 def saison_de(jour):
-    """2026-10-21 -> "2026-27" ; 2026-03-01 -> "2025-26"."""
+    """2026-10-21 : "2026-27" ; 2026-03-01 : "2025-26"."""
     annee = jour.year if jour.month >= 10 else jour.year - 1
     return f"{annee}-{(annee + 1) % 100:02d}"
 
@@ -98,7 +98,7 @@ def main():
     args, reentrainer = arguments()
     jour = date.fromisoformat(args[0]) if args else date.today()
     demonstration = jour < date.today()
-    print(f"=== PRÉDICTIONS BASKET DU {jour}{' (démonstration)' if demonstration else ''} ===")
+    print(f"PRÉDICTIONS BASKET DU {jour}{' (démonstration)' if demonstration else ''}")
 
     mise_a_jour.main()
     nettoyage.main()

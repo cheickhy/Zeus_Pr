@@ -54,7 +54,7 @@ def charger_quart_temps():
     # On ne garde que les matchs où les deux équipes sont présentes
     deux = q.groupby("game_id")["team_id"].transform("size") == 2
     q = q[deux]
-    print(f"{n0} matchs bruts -> {q['game_id'].nunique()} matchs complets "
+    print(f"{n0} matchs bruts : {q['game_id'].nunique()} matchs complets "
           f"(dont {(q['pts_ot_suppl'] > 0).sum() // 2} avec 3 prolongations ou plus)")
     return q
 
@@ -75,7 +75,7 @@ def resumer_joueurs():
 
 
 def main():
-    print("=== NETTOYAGE BASKETBALL (NBA) ===")
+    print("NETTOYAGE BASKETBALL (NBA)")
     sch = charger_calendrier()
     q = charger_quart_temps().merge(resumer_joueurs(), on=["game_id", "team_id"], how="left")
 

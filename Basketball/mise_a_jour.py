@@ -90,7 +90,7 @@ def telecharger_saison(saison):
 
 
 def main():
-    print("=== MISE À JOUR DES DONNÉES NBA ===")
+    print("MISE À JOUR DES DONNÉES NBA")
     resultats = [r for r in map(telecharger_saison, saisons_a_mettre_a_jour()) if r is not None]
     if not resultats:
         print("Rien à mettre à jour.")

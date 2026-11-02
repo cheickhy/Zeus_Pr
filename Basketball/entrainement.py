@@ -36,7 +36,7 @@ def ligne_naive(d, marques, encaisses, n=10):
 
 
 def main():
-    print("=== ENTRAÎNEMENT BASKET ===")
+    print("ENTRAÎNEMENT BASKET")
     df = pd.read_csv(DOSSIER_TRAITEES / "basketball_variables.csv", parse_dates=["date"])
     variables = [c for c in df.select_dtypes("number").columns if c not in NON_VARIABLES]
     app = df[df["annee_saison"] <= FIN_APPRENTISSAGE]

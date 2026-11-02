@@ -59,7 +59,7 @@ def matchs_du_jour(code, jour):
 
 def main(premier_jour=None):
     """premier_jour : date à partir de laquelle compléter (par défaut, reprise là où on s'était arrêté)."""
-    print("=== MISE À JOUR DES SÉLECTIONS (ESPN) ===")
+    print("MISE À JOUR DES SÉLECTIONS (ESPN)")
     anciens = pd.read_csv(FICHIER) if FICHIER.exists() else pd.DataFrame()
     if premier_jour is None:
         termines = anciens.dropna(subset=["home_score"]) if len(anciens) else anciens

@@ -52,7 +52,7 @@ def charger_calendrier():
     suspendus = sch["gamePk"].duplicated(keep=False)
     print(f"Matchs suspendus retirés : {sch.loc[suspendus, 'gamePk'].nunique()}")
     sch = sch[~suspendus]
-    print(f"{n0} lignes brutes -> {len(sch)} matchs terminés uniques")
+    print(f"{n0} lignes brutes : {len(sch)} matchs terminés uniques")
     return sch
 
 
@@ -122,7 +122,7 @@ def resumer_frappeurs():
 
 
 def main():
-    print("=== NETTOYAGE BASEBALL (MLB) ===")
+    print("NETTOYAGE BASEBALL (MLB)")
     sch = charger_calendrier()
     df = sch.merge(resumer_manches(), on="gamePk", how="inner")
 

@@ -63,7 +63,7 @@ def statistiques(ligne):
 
 
 def main():
-    print("=== MISE À JOUR DES COUPES D'EUROPE (ESPN) ===")
+    print("MISE À JOUR DES COUPES D'EUROPE (ESPN)")
     anciens = pd.read_csv(FICHIER, dtype={"espn_id": str}) if FICHIER.exists() else pd.DataFrame()
     deja = set(anciens.loc[anciens["termine"] & anciens["home_corners"].notna(), "espn_id"]) if len(anciens) else set()
     premiere = PREMIERE_ANNEE if (not deja or "--complet" in sys.argv) else date.today().year - 1
@@ -89,7 +89,7 @@ def main():
     tout = tout.sort_values(["date", "heure_utc"])
     FICHIER.parent.mkdir(parents=True, exist_ok=True)
     tout.to_csv(FICHIER, index=False)
-    print(f"Total enregistré : {len(tout)} matchs -> {FICHIER}")
+    print(f"Total enregistré : {len(tout)} matchs dans {FICHIER}")
 
 
 if __name__ == "__main__":

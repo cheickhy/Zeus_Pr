@@ -31,7 +31,7 @@ def ressemblance(a, b):
 
 
 def main():
-    print("=== DATES DES MATCHS SOFASCORE ===")
+    print("DATES DES MATCHS SOFASCORE")
     noms = {"Corner_kicks_home": "hc", "Corner_kicks_away": "ac", "Yellow_cards_home": "hy",
             "Yellow_cards_away": "ay", "home_score": "hg", "away_score": "ag"}
     s = pd.read_csv(FICHIER_SOFASCORE, low_memory=False).rename(columns=noms)
@@ -78,7 +78,7 @@ def main():
     print(f"Dates suspectes écartées : {int(suspects.sum())}")
 
     dates[["match_id", "date", "code"]].to_csv(SORTIE, index=False)
-    print(f"\n{len(dates)} matchs datés sur {n_total} -> {SORTIE}")
+    print(f"\n{len(dates)} matchs datés sur {n_total} dans {SORTIE}")
 
 
 if __name__ == "__main__":

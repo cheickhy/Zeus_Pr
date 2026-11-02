@@ -112,7 +112,7 @@ def main():
     args, reentrainer = arguments()
     jour = date.fromisoformat(args[0]) if args else date.today()
     demonstration = jour < date.today()
-    print(f"=== PRÉDICTIONS FOOTBALL (championnats){' - démonstration du ' + str(jour) if demonstration else ''} ===")
+    print(f"PRÉDICTIONS FOOTBALL (championnats){' - démonstration du ' + str(jour) if demonstration else ''}")
 
     if not demonstration:
         mise_a_jour.main()

@@ -107,7 +107,7 @@ def main():
     args, reentrainer = arguments()
     jour = args[0] if args else date.today().isoformat()
     reutiliser = not reentrainer and jour >= date.today().isoformat()
-    print(f"=== PRÉDICTIONS BASEBALL DU {jour} ===")
+    print(f"PRÉDICTIONS BASEBALL DU {jour}")
 
     mise_a_jour.main()
     nettoyage.main()

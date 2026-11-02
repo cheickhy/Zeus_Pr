@@ -37,7 +37,7 @@ def groupes_de_test(test):
 
 
 def main():
-    print("=== ENTRAÎNEMENT FOOTBALL : SÉLECTIONS ===")
+    print("ENTRAÎNEMENT FOOTBALL : SÉLECTIONS")
     df = pd.read_csv(DOSSIER_TRAITEES / "football_selections_variables.csv", parse_dates=["date"])
     df = df[df["annee"] >= DEBUT]
     variables = [c for c in df.select_dtypes("number").columns if c not in NON_VARIABLES]

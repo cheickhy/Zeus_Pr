@@ -33,7 +33,7 @@ SANS_CORRESPONDANCE = {"Sparta Prague", "Red Star Belgrade", "Lincoln Red Imps",
 
 
 def correspondance_noms(espn, fd):
-    """Nom ESPN -> nom football-data (absent si le club ne joue pas dans un championnat suivi)."""
+    """Nom ESPN : nom football-data (absent si le club ne joue pas dans un championnat suivi)."""
     res = {}
     for nom in espn:
         if nom in SANS_CORRESPONDANCE:
@@ -125,7 +125,7 @@ def charger():
 
 
 def main():
-    print("=== VARIABLES D'ENTRÉE : LIGUE DES CHAMPIONS ===")
+    print("VARIABLES D'ENTRÉE : LIGUE DES CHAMPIONS")
     coupes, champ = charger()
     sortie, noms = construire(coupes, champ)
     clubs = set(coupes["home_team"]) | set(coupes["away_team"])

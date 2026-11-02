@@ -48,7 +48,7 @@ def lire_fichier(chemin):
 
 
 def main():
-    print("=== NETTOYAGE FOOTBALL : CHAMPIONNATS EUROPÉENS ===")
+    print("NETTOYAGE FOOTBALL : CHAMPIONNATS EUROPÉENS")
     fichiers = sorted(DOSSIER.glob("*.csv"))
     df = pd.concat([lire_fichier(f) for f in fichiers], ignore_index=True)
     n0 = len(df)
@@ -94,7 +94,7 @@ def main():
                 + [f"{c}_{s}" for s in MAXIMUM for c in ["home", "away"]]
                 + list(CIBLES) + ["total_buts_mt"])
     df = df[colonnes].sort_values(["date", "code", "home_team"]).reset_index(drop=True)
-    print(f"{n0} lignes brutes -> {len(df)} matchs")
+    print(f"{n0} lignes brutes : {len(df)} matchs")
 
     etape("Disponibilité des statistiques par championnat (% de matchs)")
     dispo = df.groupby("championnat")[list(CIBLES)].apply(lambda g: g.notna().mean() * 100)

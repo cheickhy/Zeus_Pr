@@ -164,7 +164,7 @@ def main():
             continue
         tout.append(d)
         recents = d[pd.to_datetime(d["date"]) >= pd.Timestamp.today().normalize() - pd.Timedelta(days=jours)]
-        print(f"\n=== {nom.upper()} : {len(recents)} matchs joués ces {jours} derniers jours (sur {len(d)} au total) ===")
+        print(f"\n{nom.upper()} : {len(recents)} matchs joués ces {jours} derniers jours (sur {len(d)} au total)")
         if len(recents):
             visibles = [c for c in recents.columns if not c.startswith("_") and c != "sport"]
             print(recents.sort_values("date")[visibles].to_string(index=False))

@@ -35,7 +35,7 @@ def evaluer(nom, y, proba):
 
 
 def main():
-    print("=== ENTRAÎNEMENT FOOTBALL : CHAMPIONNATS ===")
+    print("ENTRAÎNEMENT FOOTBALL : CHAMPIONNATS")
     df = pd.read_csv(DOSSIER_TRAITEES / "football_championnats_variables.csv",
                      parse_dates=["date"], low_memory=False)
     variables = [c for c in df.select_dtypes("number").columns if c not in NON_VARIABLES]

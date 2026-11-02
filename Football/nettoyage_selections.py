@@ -53,7 +53,7 @@ def ajouter_colonnes(df, africaines):
 
 
 def main():
-    print("=== NETTOYAGE FOOTBALL : SÉLECTIONS NATIONALES ===")
+    print("NETTOYAGE FOOTBALL : SÉLECTIONS NATIONALES")
     df = pd.read_csv(DOSSIER / "results.csv")
     n0 = len(df)
 
@@ -64,7 +64,7 @@ def main():
     df = df.dropna(subset=["date", "home_score", "away_score"])   # matchs pas encore joués
     df = df.drop_duplicates(["date", "home_team", "away_team"])
     df = df[df["date"].dt.year >= PREMIERE_ANNEE]
-    print(f"{n0} lignes brutes -> {len(df)} matchs joués depuis {PREMIERE_ANNEE}")
+    print(f"{n0} lignes brutes : {len(df)} matchs joués depuis {PREMIERE_ANNEE}")
 
     etape("Matchs récents d'ESPN (absents de la source historique)")
     espn_joues, a_venir = lire_espn()

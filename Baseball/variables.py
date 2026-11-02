@@ -185,7 +185,7 @@ def construire(df):
 
 
 def main():
-    print("=== VARIABLES D'ENTRÉE BASEBALL ===")
+    print("VARIABLES D'ENTRÉE BASEBALL")
     df = pd.read_csv(DOSSIER_TRAITEES / "baseball_matchs.csv", parse_dates=["date"])
     sauvegarder(construire(df), "baseball_variables.csv")
 

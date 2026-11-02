@@ -48,7 +48,7 @@ def calibration(y, proba, nb=5):
 
 
 def main():
-    print("=== ENTRAÎNEMENT BASEBALL ===")
+    print("ENTRAÎNEMENT BASEBALL")
     df = pd.read_csv(DOSSIER_TRAITEES / "baseball_variables.csv", parse_dates=["date"])
     variables = [c for c in df.select_dtypes("number").columns if c not in NON_VARIABLES]
     app = df[df["season"] <= FIN_APPRENTISSAGE]

@@ -45,7 +45,7 @@ def main():
     JOURNAL.mkdir(parents=True, exist_ok=True)
     fichier_journal = JOURNAL / f"journal_{datetime.now():%Y-%m-%d_%H-%M}.txt"
     mois = date.today().month
-    print(f"=== LANCEMENT QUOTIDIEN DU {date.today():%d/%m/%Y} ===")
+    print(f"LANCEMENT QUOTIDIEN DU {date.today():%d/%m/%Y}")
     bilan = []
     for nom, script, saison in ETAPES:
         if mois not in saison:
@@ -56,7 +56,7 @@ def main():
         for l in lignes:
             print(f"   {l}")
         etat = f"OK ({duree / 60:.0f} min)" if ok else f"ÉCHEC : {erreur}"
-        print(f"   -> {etat}")
+        print(f"   {etat}")
         bilan.append((nom, etat, lignes))
 
     print("\nExport pour l'application en cours...", flush=True)
@@ -65,9 +65,9 @@ def main():
         print(f"   {l}")
     bilan.append(("Export pour l'application", "OK" if ok else f"ÉCHEC : {erreur}", lignes))
 
-    print("\n=== RÉSUMÉ ===")
+    print("\nRÉSUMÉ")
     for nom, etat, _ in bilan:
-        print(f"{'✓' if etat.startswith(('OK', 'hors')) else '✗'} {nom} : {etat}")
+        print(f"{nom} : {etat}")
     a_relancer = [nom for nom, etat, _ in bilan if etat.startswith("ÉCHEC")]
     if a_relancer:
         print("\nÀ relancer quand la connexion est revenue : python Sources/tout_lancer.py")

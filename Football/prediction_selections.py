@@ -61,7 +61,7 @@ def bilan(matchs):
 
 def main():
     _, reentrainer = arguments()
-    print("=== PRÉDICTIONS FOOTBALL : SÉLECTIONS ===")
+    print("PRÉDICTIONS FOOTBALL : SÉLECTIONS")
     mise_a_jour_selections.main()
     mise_a_jour_espn.main()
     nettoyage_selections.main()

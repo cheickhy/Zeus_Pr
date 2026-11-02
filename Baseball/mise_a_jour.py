@@ -126,7 +126,7 @@ def lignes_feuille_de_match(g):
 
 
 def main():
-    print("=== MISE À JOUR DES DONNÉES MLB ===")
+    print("MISE À JOUR DES DONNÉES MLB")
     debut, fin = date_depart(), date.today() - timedelta(days=1)
     etape(f"Calendrier du {debut} au {fin}")
     cal = telecharger(f"{API}/schedule?sportId=1&gameType=R,F,D,L,W&startDate={debut}"
