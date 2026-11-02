@@ -16,7 +16,7 @@ COLS_FRAPPEURS = ["ab", "hits", "doubles", "triples", "hr", "bb", "so", "hbp",
                   "sac_fly", "total_bases", "left_on_base"]
 
 
-DOSSIER_MAJ = BRUT_MLB.parent / "mise_a_jour"   # rempli par Baseball/mise_a_jour.py
+DOSSIER_MAJ = BRUT_MLB.parent / "mise_a_jour"
 
 
 def lire_brut(nom, **options):
@@ -74,7 +74,6 @@ def resumer_manches():
         "away_errors": g["away_errors"].sum(),
         "nb_manches": g["inning"].max(),
     })
-    # Un match doit avoir ses 3 premières manches pour les cibles
     nb_m1_3 = ls[ls["inning"] <= 3].groupby("gamePk").size()
     res = res[res.index.isin(nb_m1_3[nb_m1_3 == 3].index)]
     return res.reset_index()

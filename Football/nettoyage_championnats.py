@@ -10,7 +10,6 @@ from mise_a_jour import CHAMPIONNATS
 
 DOSSIER = DOSSIER_BRUTES / "football_data"
 
-# Colonnes du site -> noms du projet
 COLONNES = {
     "Date": "date", "Time": "heure", "HomeTeam": "home_team", "AwayTeam": "away_team",
     "FTHG": "home_buts", "FTAG": "away_buts", "HTHG": "home_buts_mt", "HTAG": "away_buts_mt",
@@ -26,7 +25,6 @@ ALIAS = {"HT": "HomeTeam", "AT": "AwayTeam", "HG": "FTHG", "AG": "FTAG"}
 MAXIMUM = {"buts": 15, "buts_mt": 10, "tirs": 50, "tirs_cadres": 30, "fautes": 45,
            "corners": 25, "jaunes": 10, "rouges": 5}
 
-# Cible -> statistique additionnée pour les deux équipes
 CIBLES = {"total_buts": "buts", "total_corners": "corners", "total_fautes": "fautes",
           "total_cartons_jaunes": "jaunes"}
 

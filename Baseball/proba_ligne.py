@@ -34,7 +34,7 @@ def main():
     if trouve.empty:
         print(f"Aucune prédiction pour « {equipe} ».")
         return
-    m = trouve.iloc[-1]   # match le plus récent prédit pour cette équipe
+    m = trouve.iloc[-1]
     mu, r = m["mu_3_manches"], m["r_3_manches"]
     plus = stats.nbinom.sf(int(ligne), r, r / (r + mu))   # P(total > ligne) pour une ligne en x,5
     print(f"{m['home_team']} - {m['away_team']} du {m['date'].date()}, 3 premières manches")

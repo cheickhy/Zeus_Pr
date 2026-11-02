@@ -8,8 +8,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from Sources.outils import (DOSSIER_TRAITEES, etape, moyenne_precedente,
                             sauvegarder, somme_precedente)
 
-FENETRES_EQUIPE = [10, 30]      # nombre de matchs précédents de l'équipe
-FENETRES_LANCEUR = [5, 15]      # nombre de matchs précédents du lanceur principal
+FENETRES_EQUIPE = [10, 30]
+FENETRES_LANCEUR = [5, 15]
 
 STATS_EQUIPE = ["pts", "pts_encaisses", "pts_m1", "enc_m1", "marque_m1", "encaisse_m1",
                 "pts_m1_3", "enc_m1_3", "coups_surs", "bb", "so", "hr", "bases"]
@@ -171,7 +171,7 @@ def construire(df):
     sortie = rattacher(sortie, fatigue, "away_id", "equipe", "away_")
 
     etape("Contexte du match (connu à l'avance)")
-    sortie = sortie.copy()   # regroupe les colonnes en mémoire (évite un avertissement de lenteur)
+    sortie = sortie.copy()
     sortie["mois"] = sortie["date"].dt.month
     sortie["nuit"] = (df["day_night"] == "night").astype(int)
     sortie["temperature"] = df["weather_temp"]

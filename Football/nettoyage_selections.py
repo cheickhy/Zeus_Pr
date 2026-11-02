@@ -11,7 +11,6 @@ DOSSIER = DOSSIER_BRUTES / "selections"
 PREMIERE_ANNEE = 1990        # le football d'avant 1990 apporte peu pour prédire aujourd'hui
 COMPETITIONS_AFRICAINES = ["African Cup of Nations", "African Cup of Nations qualification"]
 
-# Noms ESPN -> noms des données historiques
 NOMS_ESPN = {"Congo DR": "DR Congo", "Kyrgyz Republic": "Kyrgyzstan",
              "Sao Tome and Principe": "São Tomé and Príncipe"}
 

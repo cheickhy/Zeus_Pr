@@ -38,7 +38,7 @@ def classement_elo(df):
     for i, m in enumerate(df.itertuples(index=False)):
         rd, re_ = notes.get(m.home_team, ELO_DEPART), notes.get(m.away_team, ELO_DEPART)
         avant_dom[i], avant_ext[i] = rd, re_
-        if np.isnan(m.home_score):          # match à venir : pas de mise à jour
+        if np.isnan(m.home_score):
             continue
         ecart = rd - re_ + (0 if m.neutral else AVANTAGE_DOMICILE)
         attendu = 1 / (10 ** (-ecart / 400) + 1)

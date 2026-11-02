@@ -21,7 +21,6 @@ NON_VARIABLES = {"gamePk", "season", "home_id", "away_id", "home_principal_id",
                  "away_principal_id", "total_manche_1", "point_en_manche_1",
                  "total_3_prem_manches", "total_match"}
 
-# Nom affiché -> (colonne cible, fonction qui crée la cible 0/1)
 MARCHES = {
     "Au moins 1 point en 1ère manche": lambda d: (d["total_manche_1"] > 0).astype(int),
     "Plus de 8,5 points sur le match": lambda d: (d["total_match"] > 8.5).astype(int),
@@ -62,18 +61,15 @@ def main():
         y_app, y_reg, y_test = faire_cible(app), faire_cible(reg), faire_cible(test)
         resultats = []
 
-        # 1. Référence naïve : toujours le même taux
         taux = y_app.mean()
         resultats.append(evaluer("Référence naïve", y_test, np.full(len(y_test), taux)))
 
-        # 2. Régression logistique : modèle simple et robuste
         logit = make_pipeline(SimpleImputer(strategy="median"), StandardScaler(),
                               LogisticRegression(C=0.05, max_iter=2000))
         logit.fit(app[variables], y_app)
         resultats.append(evaluer("Régression logistique", y_test,
                                  logit.predict_proba(test[variables])[:, 1]))
 
-        # 3. LightGBM : capte les interactions entre variables
         gbm = lgb.LGBMClassifier(n_estimators=2000, learning_rate=0.02, num_leaves=15,
                                  min_child_samples=200, subsample=0.8, subsample_freq=1,
                                  colsample_bytree=0.5, reg_lambda=5, verbose=-1)

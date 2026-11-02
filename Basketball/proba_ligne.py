@@ -37,7 +37,7 @@ def main():
     if match.empty:
         print(f"Aucune prédiction pour {equipe}.")
         return
-    m = match.iloc[-1]   # match le plus récent prédit pour cette équipe
+    m = match.iloc[-1]
     if sys.argv[2].startswith("equipe-"):
         camp = "dom" if m["home_team_abbr"] == equipe else "ext"
         cible = f"equipe_{camp}_{cible}"

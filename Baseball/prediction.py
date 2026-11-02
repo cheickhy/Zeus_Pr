@@ -25,14 +25,12 @@ NON_VARIABLES = {"gamePk", "season", "home_id", "away_id", "home_principal_id",
                  "away_principal_id", "total_manche_1", "point_en_manche_1",
                  "total_3_prem_manches", "total_match"}
 
-# Nom de colonne -> (description, fonction qui crée la cible 0/1 à partir des matchs)
 MARCHES = {
     "proba_point_manche_1": ("Au moins 1 point en 1ère manche",
                              lambda d: (d["total_manche_1"] > 0).astype(int)),
     "proba_plus_8_5": ("Plus de 8,5 points sur le match",
                        lambda d: (d["total_match"] > 8.5).astype(int)),
 }
-# Marché calculé par le modèle de comptage (binomiale négative), utilisé aussi pour le bilan
 MARCHE_3_MANCHES = {"proba_3m_plus_2_5": ("Plus de 2,5 points sur les 3 premières manches",
                                           lambda d: (d["total_3_prem_manches"] > 2.5).astype(int))}
 
@@ -158,7 +156,6 @@ def main():
     print("Probabilité pour une autre ligne des 3 premières manches : "
           "python Baseball/proba_ligne.py ÉQUIPE LIGNE  (ex. Yankees 3.5)")
 
-    # Enregistrement : une prédiction par match (la plus récente, faite avant le match)
     FICHIER_PREDICTIONS.parent.mkdir(parents=True, exist_ok=True)
     if FICHIER_PREDICTIONS.exists():
         anciennes = pd.read_csv(FICHIER_PREDICTIONS)

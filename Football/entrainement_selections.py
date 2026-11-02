@@ -18,7 +18,6 @@ DEBUT, FIN_APPRENTISSAGE, FIN_REGLAGE = 2000, 2019, 2021
 NON_VARIABLES = {"home_score", "away_score", "total_buts", "match", "annee"}
 RESULTATS = ["domicile", "nul", "exterieur"]   # domicile = première équipe nommée
 
-# Nom affiché -> fonction qui crée la cible
 MARCHES = {
     "Résultat (1 N 2)": lambda d: d["resultat"].map({r: i for i, r in enumerate(RESULTATS)}),
     "Plus de 1,5 buts": lambda d: (d["total_buts"] > 1.5).astype(int),

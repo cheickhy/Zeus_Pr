@@ -23,7 +23,7 @@ def telecharger(url, essais=3):
             requete = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
             with urllib.request.urlopen(requete, timeout=30) as r:
                 return json.load(r)
-        except Exception:  # coupure réseau passagère : on réessaie
+        except Exception:
             if i == essais - 1:
                 raise
             time.sleep(2 * (i + 1))

@@ -19,7 +19,6 @@ ETAPES = [
     ("Sélections (CAN, qualifications)", "Football/prediction_selections.py", set(range(1, 13))),
     ("Baseball (MLB)", "Baseball/prediction.py", {3, 4, 5, 6, 7, 8, 9, 10}),
 ]
-# Lignes de la sortie de chaque programme reprises dans le résumé
 IMPORTANT = re.compile(r"matchs trouvés|matchs, du|Aucun match|Échec|ÉCHECS|commencés|bons résultats|"
                        r"écart moyen de .* Match|Prédictions enregistrées :|exportés")
 

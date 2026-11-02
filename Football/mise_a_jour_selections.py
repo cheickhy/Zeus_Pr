@@ -8,8 +8,8 @@ from Sources.outils import DOSSIER_BRUTES
 
 URL = "https://raw.githubusercontent.com/martj42/international_results/master/{}"
 DOSSIER = DOSSIER_BRUTES / "selections"
-FICHIERS = ["results.csv",      # un match par ligne
-            "shootouts.csv"]    # vainqueur des séances de tirs au but
+FICHIERS = ["results.csv",
+            "shootouts.csv"]
 
 
 def main():

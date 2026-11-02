@@ -19,7 +19,6 @@ SAISON_REGLAGE = 2022      # saison 2022-23
 CIBLES = ["total_buts", "total_buts_mt", "total_corners", "total_fautes", "total_cartons_jaunes"]
 NON_VARIABLES = set(CIBLES) | {"match", "annee_saison"}
 
-# Nom affiché -> (colonne, ligne)
 MARCHES = {
     "Plus de 2,5 buts": ("total_buts", 2.5),
     "Plus de 9,5 corners": ("total_corners", 9.5),

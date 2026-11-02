@@ -22,7 +22,6 @@ FICHIER_PREDICTIONS = RACINE / "Données" / "Prédictions" / "football_predictio
 URL_PROCHAINS_MATCHS = "https://www.football-data.co.uk/fixtures.csv"
 CLE = ["code", "date", "home_team", "away_team"]
 
-# Colonne de sortie -> (nom affiché, cible, ligne)
 MARCHES = {
     "proba_plus_2_5_buts": ("+2,5 buts", "total_buts", 2.5),
     "proba_plus_9_5_corners": ("+9,5 corners", "total_corners", 9.5),

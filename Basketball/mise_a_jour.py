@@ -30,7 +30,7 @@ def telecharger(url, essais=3):
         try:
             with urllib.request.urlopen(urllib.request.Request(url, headers=ENTETES), timeout=60) as r:
                 return json.load(r)
-        except Exception:  # site lent ou coupure passagère : on réessaie
+        except Exception:
             if i == essais - 1:
                 raise
             time.sleep(5 * (i + 1))
@@ -69,7 +69,7 @@ def telecharger_saison(saison):
         p["game_id"] = p["GAME_ID"].astype(int)
         p = p[["game_id", "TEAM_ID", "PTS"]].rename(columns={"TEAM_ID": "team_id", "PTS": col})
         quarts = quarts.merge(p, on=["game_id", "team_id"], how="left")
-        time.sleep(1)   # on ménage le site
+        time.sleep(1)
     # Pas de ligne de prolongation = pas de prolongation jouée = 0 point
     quarts[["pts_ot1", "pts_ot2"]] = quarts[["pts_ot1", "pts_ot2"]].fillna(0)
     quarts.insert(1, "season", saison)

@@ -15,7 +15,6 @@ API = "https://site.api.espn.com/apis/site/v2/sports/soccer/{}/scoreboard?dates=
 FICHIER = DOSSIER_BRUTES / "selections" / "espn_matchs.csv"
 JOURS_A_VENIR = 14
 
-# Compétition ESPN -> nom utilisé dans les données historiques
 COMPETITIONS = {
     "caf.nations": "African Cup of Nations",
     "caf.nations_qual": "African Cup of Nations qualification",

@@ -38,7 +38,7 @@ def main():
         print(f"Aucune prédiction pour « {equipe} » avec les modèles de comptage (ajoutés le 14 octobre 2026). "
               "Relance le programme de prédiction avant ses prochains matchs.")
         return
-    m = trouve.iloc[-1]   # match le plus récent prédit pour cette équipe
+    m = trouve.iloc[-1]
     mu, r = m[f"mu_{marche}"], m[f"r_{marche}"]
     plus = stats.nbinom.sf(int(ligne), r, r / (r + mu))   # P(total > ligne) pour une ligne en x,5
     print(f"{m['home_team']} - {m['away_team']} du {m['date'].date()} ({m['championnat']}), {MARCHES[marche]}")

@@ -7,7 +7,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from Sources.outils import (DOSSIER_TRAITEES, etape, moyenne_precedente,
                             sauvegarder)
 
-FENETRES = [5, 10, 20]   # nombre de matchs précédents de l'équipe
+FENETRES = [5, 10, 20]
 
 STATS_EQUIPE = ["pts", "pts_encaisses", "pts_q1", "enc_q1", "pts_mt", "enc_mt",
                 "possessions", "fga", "fg3a", "fta", "oreb", "dreb", "ast", "to", "pf",
@@ -59,8 +59,7 @@ def variables_equipes(eq):
     cols["matchs_joues_saison"] = eq.groupby("equipe_saison").cumcount()
     ecart = (eq["date"] - eq.groupby("equipe")["date"].shift(1)).dt.days
     cols["jours_repos"] = ecart.clip(upper=7)
-    cols["dos_a_dos"] = (ecart == 1).astype(int)   # a joué la veille
-    # Toutes les colonnes ajoutées d'un coup (plus rapide que une par une)
+    cols["dos_a_dos"] = (ecart == 1).astype(int)
     return pd.concat([eq[["game_id", "equipe"]], pd.DataFrame(cols)], axis=1)
 
 
@@ -97,7 +96,6 @@ def construire(df):
     sortie = rattacher(sortie, eq, "away_team_id", "away_")
     sortie = sortie.merge(contexte_ligue(df), on="date", how="left").copy()
     sortie["mois"] = sortie["date"].dt.month
-    # Première année de la saison ("2008-09" -> 2008), utile pour découper dans le temps
     sortie["annee_saison"] = sortie["season"].str[:4].astype(int)
     for c, camp in [("dom", "home"), ("ext", "away")]:
         sortie[f"equipe_{c}_q1"] = df[f"{camp}_pts_q1"]

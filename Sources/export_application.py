@@ -14,7 +14,6 @@ from Sources.outils import RACINE
 DOSSIER = RACINE / "Données" / "Prédictions"
 SORTIE = DOSSIER / "predictions_application.json"
 
-# Lignes proposées à l'application pour chaque marché de comptage du football
 LIGNES_FOOT = {"buts": np.arange(0.5, 6, 1), "corners": np.arange(6.5, 14, 1),
                "fautes": np.arange(18.5, 31, 1), "jaunes": np.arange(1.5, 8, 1)}
 LIGNES_3_MANCHES = np.arange(0.5, 7, 1)
@@ -42,7 +41,7 @@ def lire(nom, depuis):
     if not chemin.exists():
         return pd.DataFrame()
     p = pd.read_csv(chemin, parse_dates=["date"])
-    if depuis == "dernier_jour":        # exemple : la dernière journée prédite de chaque sport
+    if depuis == "dernier_jour":
         return p[p["date"] == p["date"].max()]
     return p[p["date"] >= pd.Timestamp(depuis)]
 
@@ -136,7 +135,6 @@ def ajouter_proba_moins(matchs):
     return matchs
 
 
-# Un fichier par sport, en plus du fichier commun (sport du fichier -> valeurs du champ « sport »)
 FICHIERS_PAR_SPORT = {"predictions_football.json": {"football", "football_coupes", "football_selections"},
                       "predictions_basket.json": {"basket"},
                       "predictions_baseball.json": {"baseball"}}

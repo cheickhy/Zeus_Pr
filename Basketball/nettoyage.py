@@ -11,7 +11,7 @@ STATS_JOUEURS = ["fgm", "fga", "fg3m", "fg3a", "ftm", "fta", "oreb", "dreb",
                  "reb", "ast", "stl", "blk", "to", "pf"]
 
 
-DOSSIER_MAJ = BRUT_NBA.parent / "mise_a_jour"   # rempli par Basketball/mise_a_jour.py
+DOSSIER_MAJ = BRUT_NBA.parent / "mise_a_jour"
 
 
 def lire_brut(nom, **options):
@@ -51,7 +51,6 @@ def charger_quart_temps():
     q["pts_ot_suppl"] = q["pts_total"] - q[QT].fillna(0).sum(axis=1)
     incoherents = q.loc[q["pts_ot_suppl"] < 0, "game_id"]
     q = q[~q["game_id"].isin(incoherents)]
-    # On ne garde que les matchs où les deux équipes sont présentes
     deux = q.groupby("game_id")["team_id"].transform("size") == 2
     q = q[deux]
     print(f"{n0} matchs bruts : {q['game_id'].nunique()} matchs complets "

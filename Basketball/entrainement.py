@@ -21,7 +21,6 @@ NON_VARIABLES = {"game_id", "home_team_id", "away_team_id", "annee_saison",
                  "total_q1", "total_mi_temps", "total_match"} | {
     f"equipe_{c}_{p}" for c in ("dom", "ext") for p in ("q1", "mi_temps", "match")}
 
-#  suffixes des colonnes « points marqués / encaissés » correspondantes
 CIBLES = {
     "total_q1": ("pts_q1", "enc_q1", "1er quart-temps"),
     "total_mi_temps": ("pts_mt", "enc_mt", "Mi-temps"),

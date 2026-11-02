@@ -9,9 +9,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from Sources.outils import (DOSSIER_TRAITEES, etape, moyenne_precedente,
                             sauvegarder)
 
-FENETRES = [5, 10, 20]   # nombre de matchs précédents de l'équipe
+FENETRES = [5, 10, 20]
 
-# Statistique de l'équipe (colonne de l'équipe, colonne de l'adversaire)
 STATS = {"buts": "buts", "buts_mt": "buts_mt", "tirs": "tirs", "tirs_cadres": "tirs_cadres",
          "corners": "corners", "fautes": "fautes", "jaunes": "jaunes", "rouges": "rouges"}
 

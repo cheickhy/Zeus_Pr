@@ -73,11 +73,10 @@ def main():
         for annee in range(PREMIERE_SAISON, en_cours + 1):
             fichier = DOSSIER / f"{code}_{code_saison(annee)}.csv"
             if fichier.exists() and annee < en_cours:
-                continue                     # saison terminée déjà téléchargée
+                continue
             try:
                 contenu = telecharger(URL.format(saison=code_saison(annee), code=code))
             except Exception as e:
-                # On garde la version déjà présente plutôt que de tout arrêter
                 echecs += 1
                 print(f"Échec pour {fichier.name} ({e}) : ancienne version conservée")
                 continue
@@ -86,7 +85,7 @@ def main():
                 continue
             fichier.write_bytes(contenu)
             nouveaux += 1
-            time.sleep(0.3)                  # on ménage le site
+            time.sleep(0.3)
         print(f"{len(list(DOSSIER.glob(f'{code}_*.csv')))} saisons disponibles")
     print(f"\nFichiers téléchargés ou mis à jour : {nouveaux} | saisons absentes du site : {absents}"
           + (f" | ÉCHECS : {echecs} (relancer plus tard pour les résultats les plus récents)" if echecs else ""))

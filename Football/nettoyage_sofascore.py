@@ -57,7 +57,6 @@ def nettoyer_colonnes_texte(df):
     nouvelles_colonnes = {}
     colonnes_ratio_presentes = []
 
-    # Colonnes "X/Y (Z%)" -> 3 nouvelles colonnes numériques chacune
     for base in COLONNES_RATIO:
         for suffixe in ["_home", "_away"]:
             col = base + suffixe
@@ -72,8 +71,6 @@ def nettoyer_colonnes_texte(df):
     df = df.drop(columns=colonnes_ratio_presentes)
     df = pd.concat([df, pd.DataFrame(nouvelles_colonnes, index=df.index)], axis=1)
 
-    # Colonnes "Z%" seules -> même nom, converties en place (pas de fragmentation,
-    # une seule colonne réécrite, pas d'ajout)
     for base in COLONNES_POURCENTAGE:
         for suffixe in ["_home", "_away"]:
             col = base + suffixe
@@ -85,7 +82,6 @@ def nettoyer_colonnes_texte(df):
 
 
 def calculer_cibles(df):
-    # home_score / away_score déjà numériques dans le fichier source SofaScore
     df["home_score"] = pd.to_numeric(df["home_score"], errors="coerce")
     df["away_score"] = pd.to_numeric(df["away_score"], errors="coerce")
     df = df.dropna(subset=["home_score", "away_score"]).copy()
@@ -110,7 +106,7 @@ def calculer_cibles(df):
 
     df["Throw-ins_home"] = pd.to_numeric(df["Throw-ins_home"], errors="coerce")
     df["Throw-ins_away"] = pd.to_numeric(df["Throw-ins_away"], errors="coerce")
-    total_touches = df["Throw-ins_home"] + df["Throw-ins_away"]  # NaN si un camp manque
+    total_touches = df["Throw-ins_home"] + df["Throw-ins_away"]
     aberrant = total_touches < SEUIL_TOUCHES_MIN
     print(f"Matchs avec un nombre de touches aberrant mis à vide : {aberrant.sum()}")
     df.loc[aberrant, ["Throw-ins_home", "Throw-ins_away"]] = np.nan
