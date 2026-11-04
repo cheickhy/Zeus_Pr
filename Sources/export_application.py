@@ -24,6 +24,10 @@ def arrondi(x):
     return None if pd.isna(x) else round(float(x), 3)
 
 
+def texte(x):
+    return None if pd.isna(x) else str(x)
+
+
 def lignes_nbinom(mu, r, lignes):
     """P(total > ligne) avec la binomiale négative (lignes en x,5)."""
     return [{"ligne": float(l), "proba_plus": arrondi(stats.nbinom.sf(int(l), r, r / (r + mu)))} for l in lignes]
@@ -43,7 +47,16 @@ def lire(nom, depuis):
     p = pd.read_csv(chemin, parse_dates=["date"])
     if depuis == "dernier_jour":
         return p[p["date"] == p["date"].max()]
-    return p[p["date"] >= pd.Timestamp(depuis)]
+    p = p[p["date"] >= pd.Timestamp(depuis)]
+    # Match déjà commencé ou joué : inutile pour les tests, on l'écarte (sans heure connue, on le garde)
+    if "coup_envoi_utc" in p:
+        coup_envoi = pd.to_datetime(p["coup_envoi_utc"], errors="coerce")
+    elif "heure_utc" in p:
+        coup_envoi = pd.to_datetime(p["date"].dt.strftime("%Y-%m-%d") + " " + p["heure_utc"].fillna("inconnue"), errors="coerce")
+    else:
+        return p
+    commence = coup_envoi.dt.tz_localize("UTC") <= pd.Timestamp.now(tz="UTC")
+    return p[~commence]
 
 
 def football(depuis):
@@ -59,6 +72,7 @@ def football(depuis):
                                     ("proba_plus_24_5_fautes", "fautes", 24.5), ("proba_plus_3_5_jaunes", "jaunes", 3.5)]:
                 marches[nom] = {"nombre_attendu": None, "lignes": [{"ligne": ligne, "proba_plus": arrondi(m[col])}]}
         fiches.append({"sport": "football", "competition": m["championnat"], "date": m["date"].date().isoformat(),
+                       "coup_envoi_utc": texte(m.get("coup_envoi_utc")),
                        "domicile": m["home_team"], "exterieur": m["away_team"], "marches": marches,
                        "avertissement": None, "predit_le": m["predit_le"]})
     return fiches
@@ -68,7 +82,8 @@ def selections(depuis):
     fiches = []
     for _, m in lire("selections_predictions.csv", depuis).iterrows():
         fiches.append({"sport": "football_selections", "competition": m["tournament"],
-                       "date": m["date"].date().isoformat(), "domicile": m["home_team"], "exterieur": m["away_team"],
+                       "date": m["date"].date().isoformat(), "coup_envoi_utc": texte(m.get("coup_envoi_utc")),
+                       "domicile": m["home_team"], "exterieur": m["away_team"],
                        "marches": {"resultat": {"victoire_domicile": arrondi(m["proba_domicile"]),
                                                 "nul": arrondi(m["proba_nul"]),
                                                 "victoire_exterieur": arrondi(m["proba_exterieur"])},
@@ -105,6 +120,7 @@ def basket(depuis):
                    for c, nom in cibles.items() if f"prevu_{c}" in m and pd.notna(m[f"prevu_{c}"])}
         prudence = str(m.get("debut_saison")) == "True"
         fiches.append({"sport": "basket", "competition": "NBA", "date": m["date"].date().isoformat(),
+                       "coup_envoi_utc": texte(m.get("coup_envoi_utc")),
                        "domicile": m["home_team_abbr"], "exterieur": m["away_team_abbr"], "marches": marches,
                        "avertissement": "debut_de_saison" if prudence else None, "predit_le": m["predit_le"]})
     return fiches
@@ -119,19 +135,29 @@ def baseball(depuis):
             marches["total_3_premieres_manches"] = {"points_attendus": arrondi(m["mu_3_manches"]),
                                                     "lignes": lignes_nbinom(m["mu_3_manches"], m["r_3_manches"], LIGNES_3_MANCHES)}
         fiches.append({"sport": "baseball", "competition": "MLB", "date": pd.Timestamp(m["date"]).date().isoformat(),
+                       "coup_envoi_utc": texte(m.get("coup_envoi_utc")),
                        "domicile": m["home_team"], "exterieur": m["away_team"],
                        "lanceurs": {"domicile": m["home_principal_nom"], "exterieur": m["away_principal_nom"]},
                        "marches": marches, "avertissement": None, "predit_le": m["predit_le"]})
     return fiches
 
 
+def niveau_confiance(plus):
+    """Seuils tirés du bilan : au-dessus de 70 %, environ 3 bonnes réponses sur 4."""
+    if plus is None:
+        return None
+    certitude = max(plus, 1 - plus)
+    return "fort" if certitude >= 0.70 else "moyen" if certitude >= 0.60 else "faible"
+
+
 def ajouter_proba_moins(matchs):
-    """Ajoute « proba_moins » à chaque ligne de chaque marché, pour que l'application n'ait aucun calcul à faire."""
+    """Ajoute « proba_moins » et « confiance » à chaque ligne de chaque marché, pour que l'application n'ait aucun calcul à faire."""
     for m in matchs:
         for marche in m["marches"].values():
             for ligne in marche.get("lignes", []) if isinstance(marche, dict) else []:
                 plus = ligne.get("proba_plus")
                 ligne["proba_moins"] = None if plus is None else round(1 - plus, 3)
+                ligne["confiance"] = niveau_confiance(plus)
     return matchs
 
 
@@ -143,7 +169,9 @@ FICHIERS_PAR_SPORT = {"predictions_football.json": {"football", "football_coupes
 def ecrire(chemin, matchs):
     contenu = {"genere_le": datetime.now().strftime("%Y-%m-%d %H:%M"), "version_format": 2,
                "explication": "proba_plus = probabilité que le total dépasse la ligne (ex. ligne 2.5 = 3 buts ou plus). "
-                              "proba_moins = probabilité que le total reste en dessous (ex. ligne 2.5 = 0, 1 ou 2 buts).",
+                              "proba_moins = probabilité que le total reste en dessous (ex. ligne 2.5 = 0, 1 ou 2 buts). "
+                              "confiance = fort si le côté le plus probable dépasse 70 %, moyen de 60 à 70 %, "
+                              "faible en dessous de 60 % (presque pile ou face).",
                "nombre_de_matchs": len(matchs), "matchs": matchs}
     chemin.write_text(json.dumps(contenu, ensure_ascii=False, indent=2), encoding="utf-8")
 

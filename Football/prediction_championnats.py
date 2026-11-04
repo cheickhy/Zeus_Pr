@@ -128,9 +128,10 @@ def main():
         futurs = futurs[futurs["date"] >= pd.Timestamp(jour)]
         # Un match déjà commencé ne compte pas comme test réel : on l'écarte
         # (heures du site = heure de Londres ; sans heure connue, on garde le match)
-        coup_envoi = pd.to_datetime(futurs["date"].dt.strftime("%Y-%m-%d") + " " + futurs["heure"].fillna("23:59"),
+        coup_envoi = pd.to_datetime(futurs["date"].dt.strftime("%Y-%m-%d") + " " + futurs["heure"].fillna("inconnue"),
                                     errors="coerce").dt.tz_localize("Europe/London", ambiguous="NaT", nonexistent="NaT")
         commence = coup_envoi <= pd.Timestamp.now(tz="Europe/London")
+        futurs = futurs.assign(coup_envoi_utc=coup_envoi.dt.tz_convert("UTC").dt.strftime("%Y-%m-%d %H:%M"))
         if commence.any():
             print(f"Matchs déjà commencés, écartés : {int(commence.sum())}")
         futurs = futurs[~commence]
@@ -149,6 +150,8 @@ def main():
 
     etape("Modèles (réutilisés s'ils ont moins de 7 jours), puis prédiction")
     sortie = a_predire[CLE + ["championnat"]].copy()
+    if "coup_envoi_utc" in futurs:
+        sortie = sortie.merge(futurs[CLE + ["coup_envoi_utc"]], on=CLE, how="left")
     for col, (nom, cible, ligne) in MARCHES.items():
         modele = modele_sauvegarde(f"football_{col}", colonnes,
                                    lambda cible=cible, ligne=ligne: entrainer(histo, colonnes, cible, ligne),

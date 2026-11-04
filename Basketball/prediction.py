@@ -43,7 +43,8 @@ def matchs_a_venir(jour):
             lignes.append({"game_id": int(g["gameId"]), "date": pd.Timestamp(jour), "season": saison,
                            "home_team_id": g["homeTeam"]["teamId"], "away_team_id": g["awayTeam"]["teamId"],
                            "home_team_abbr": g["homeTeam"]["teamTricode"],
-                           "away_team_abbr": g["awayTeam"]["teamTricode"]})
+                           "away_team_abbr": g["awayTeam"]["teamTricode"],
+                           "coup_envoi_utc": g["gameDateTimeUTC"][:16].replace("T", " ")})
     return pd.DataFrame(lignes)
 
 
@@ -118,14 +119,16 @@ def main():
     print(f"{len(futurs)} matchs trouvés")
 
     etape("Calcul des indices (matchs passés uniquement)")
-    tout = pd.concat([matchs[matchs["date"] < pd.Timestamp(jour)], futurs], ignore_index=True)
+    tout = pd.concat([matchs[matchs["date"] < pd.Timestamp(jour)], futurs.drop(columns="coup_envoi_utc", errors="ignore")],
+                     ignore_index=True)
     feats = variables.construire(tout)
     colonnes = [c for c in feats.select_dtypes("number").columns if c not in NON_VARIABLES]
     histo = feats[feats["total_match"].notna()]
     a_predire = feats[feats["game_id"].isin(futurs["game_id"])].set_index("game_id")
 
     etape("Modèles (réutilisés s'ils ont moins de 7 jours), puis prédiction")
-    sortie = futurs[["game_id", "date", "home_team_abbr", "away_team_abbr"]].copy()
+    sortie = futurs[["game_id", "date", "home_team_abbr", "away_team_abbr"]
+                    + [c for c in ["coup_envoi_utc"] if c in futurs]].copy()
     for cible in list(CIBLES) + list(CIBLES_EQUIPES):
         modele = modele_sauvegarde(f"basket_{cible}", colonnes,
                                    lambda cible=cible: entrainer(histo, colonnes, cible),

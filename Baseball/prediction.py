@@ -63,6 +63,7 @@ def matchs_a_venir(jour):
             if g["status"]["abstractGameState"] == "Final" or g["status"]["detailedState"] == "Postponed":
                 continue
             ligne = mise_a_jour.ligne_calendrier(g)
+            ligne["coup_envoi_utc"] = g["gameDate"][:16].replace("T", " ")
             for camp in ["home", "away"]:
                 lanceur = g["teams"][camp].get("probablePitcher", {})
                 ligne[f"{camp}_principal_id"] = lanceur.get("id")
@@ -121,7 +122,7 @@ def main():
 
     etape("Calcul des indices (matchs passés uniquement)")
     tout = pd.concat([matchs[matchs["date"] < pd.Timestamp(jour)],
-                      futurs.drop(columns=["home_principal_nom", "away_principal_nom"])],
+                      futurs.drop(columns=["home_principal_nom", "away_principal_nom", "coup_envoi_utc"])],
                      ignore_index=True)
     feats = variables.construire(tout)
     colonnes = [c for c in feats.select_dtypes("number").columns if c not in NON_VARIABLES]
@@ -129,7 +130,7 @@ def main():
     a_predire = feats[feats["gamePk"].isin(futurs["gamePk"])]
 
     etape("Modèles (réutilisés s'ils ont moins de 7 jours), puis prédiction")
-    sortie = futurs[["gamePk", "date", "home_team", "away_team",
+    sortie = futurs[["gamePk", "date", "coup_envoi_utc", "home_team", "away_team",
                      "home_principal_nom", "away_principal_nom"]].copy()
     for col, (nom, cible) in MARCHES.items():
         def entrainer(cible=cible):

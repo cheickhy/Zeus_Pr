@@ -44,7 +44,7 @@ def matchs_du_jour(code, jour):
         termine = e["status"]["type"]["completed"]
         lieu = c.get("venue", {}).get("address", {})
         lignes.append({
-            "date": e["date"][:10], "home_team": equipes["home"]["team"]["displayName"],
+            "date": e["date"][:10], "coup_envoi_utc": e["date"][:16].replace("T", " "), "home_team": equipes["home"]["team"]["displayName"],
             "away_team": equipes["away"]["team"]["displayName"],
             # ESPN affiche 0-0 pour un match à venir : le score n'est gardé que si le match est fini
             "home_score": float(equipes["home"]["score"]) if termine else None,

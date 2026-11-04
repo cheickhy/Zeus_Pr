@@ -89,6 +89,8 @@ def main():
     m_res = modele_sauvegarde("selections_resultat", colonnes, lambda: entrainer_resultat(histo, colonnes), reutiliser)
     m_buts = modele_sauvegarde("selections_plus_2_5_buts", colonnes, lambda: entrainer_buts(histo, colonnes), reutiliser)
     sortie = a_predire[CLE + ["tournament"]].copy()
+    if "coup_envoi_utc" in futurs:
+        sortie["coup_envoi_utc"] = futurs["coup_envoi_utc"].values
     probas = m_res.predict_proba(a_predire[colonnes])
     for i, r in enumerate(RESULTATS):
         sortie[f"proba_{r}"] = probas[:, i].round(3)
