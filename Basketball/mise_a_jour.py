@@ -10,6 +10,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from Sources.outils import BRUT_NBA, etape
+import espn
 
 API = "https://stats.nba.com/stats"
 DOSSIER_MAJ = BRUT_NBA.parent / "mise_a_jour"
@@ -23,6 +24,7 @@ STATS = {"FGM": "fgm", "FGA": "fga", "FG3M": "fg3m", "FG3A": "fg3a", "FTM": "ftm
          "TOV": "to", "PF": "pf"}
 # Première saison dont les données d'origine sont incomplètes (2024-25 : 38 matchs manquants)
 PREMIERE_SAISON_A_METTRE_A_JOUR = 2024
+NBA_DISPONIBLE = True
 
 
 def telecharger(url, essais=3):
@@ -89,9 +91,29 @@ def telecharger_saison(saison):
     return calendrier, quarts, equipes
 
 
+def nba_repond():
+    try:
+        requete = urllib.request.Request(f"{API}/scheduleleaguev2?LeagueID=00&Season={saisons_a_mettre_a_jour()[-1]}", headers=ENTETES)
+        urllib.request.urlopen(requete, timeout=20).close()
+        return True
+    except Exception:
+        return False
+
+
 def main():
+    global NBA_DISPONIBLE
     print("MISE À JOUR DES DONNÉES NBA")
-    resultats = [r for r in map(telecharger_saison, saisons_a_mettre_a_jour()) if r is not None]
+    NBA_DISPONIBLE = nba_repond()
+    if NBA_DISPONIBLE:
+        try:
+            resultats = [r for r in map(telecharger_saison, saisons_a_mettre_a_jour()) if r is not None]
+        except Exception:
+            NBA_DISPONIBLE = False
+    if not NBA_DISPONIBLE:
+        print("Le site de la NBA ne répond pas : on utilise ESPN.")
+        espn.main()
+        return
+    espn.effacer()
     if not resultats:
         print("Rien à mettre à jour.")
         return

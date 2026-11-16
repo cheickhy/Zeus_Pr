@@ -7,6 +7,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+import espn
 import mise_a_jour
 import nettoyage
 import variables
@@ -30,9 +31,14 @@ def saison_de(jour):
 
 
 def matchs_a_venir(jour):
-    """Matchs de saison régulière prévus ce jour-là, d'après le calendrier officiel."""
+    """Matchs de saison régulière prévus ce jour-là, d'après le calendrier officiel (ESPN si la NBA ne répond pas)."""
     saison = saison_de(jour)
-    cal = mise_a_jour.telecharger(f"{mise_a_jour.API}/scheduleleaguev2?LeagueID=00&Season={saison}")
+    if not mise_a_jour.NBA_DISPONIBLE:
+        return espn.a_venir(jour)
+    try:
+        cal = mise_a_jour.telecharger(f"{mise_a_jour.API}/scheduleleaguev2?LeagueID=00&Season={saison}")
+    except Exception:
+        return espn.a_venir(jour)
     lignes = []
     for jour_cal in cal["leagueSchedule"]["gameDates"]:
         if pd.to_datetime(jour_cal["gameDate"]).date() != jour:
@@ -87,8 +93,11 @@ def bilan(matchs):
     if not FICHIER_PREDICTIONS.exists():
         print("Aucune prédiction enregistrée pour l'instant.")
         return
-    pred = pd.read_csv(FICHIER_PREDICTIONS)
-    joues = pred.merge(resultats(matchs), on="game_id", how="inner")
+    pred = pd.read_csv(FICHIER_PREDICTIONS, parse_dates=["date"])
+    # Date et équipes plutôt que le numéro de match : ESPN et la NBA n'ont pas les mêmes numéros
+    reels = resultats(matchs).drop(columns="game_id").assign(
+        date=matchs["date"], home_team_abbr=matchs["home_team_abbr"], away_team_abbr=matchs["away_team_abbr"])
+    joues = pred.merge(reels, on=["date", "home_team_abbr", "away_team_abbr"], how="inner")
     print(f"Prédictions enregistrées : {len(pred)} | matchs déjà joués : {len(joues)}")
     if len(joues):
         comparer(joues, "Résultats :")

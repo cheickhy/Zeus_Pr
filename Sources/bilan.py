@@ -112,9 +112,10 @@ def basket():
     if not p.exists():
         return pd.DataFrame()
     pred = pd.read_csv(p, parse_dates=["date"])
-    reel = pd.read_csv(DOSSIER_TRAITEES / "basketball_matchs.csv")
-    m = pred.merge(reel[["game_id", "home_pts_total", "away_pts_total", "total_q1", "total_mi_temps", "total_match"]],
-                   on="game_id")
+    reel = pd.read_csv(DOSSIER_TRAITEES / "basketball_matchs.csv", parse_dates=["date"])
+    cle = ["date", "home_team_abbr", "away_team_abbr"]
+    m = pred.merge(reel[cle + ["home_pts_total", "away_pts_total", "total_q1", "total_mi_temps", "total_match"]],
+                   on=cle)
     if m.empty:
         return pd.DataFrame()
     res = pd.DataFrame({"sport": "basket", "date": m["date"].dt.date,

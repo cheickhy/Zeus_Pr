@@ -12,6 +12,14 @@ STATS_JOUEURS = ["fgm", "fga", "fg3m", "fg3a", "ftm", "fta", "oreb", "dreb",
 
 
 DOSSIER_MAJ = BRUT_NBA.parent / "mise_a_jour"
+DOSSIER_ESPN = BRUT_NBA.parent / "espn"
+
+
+def mise_a_jour(nom):
+    """Matchs téléchargés auprès de la NBA, plus ceux d'ESPN quand la NBA ne répondait pas."""
+    morceaux = [pd.read_csv(d / f"{nom}.csv") for d in (DOSSIER_MAJ, DOSSIER_ESPN)
+                if (d / f"{nom}.csv").exists() and (d / f"{nom}.csv").stat().st_size > 2]
+    return pd.concat(morceaux, ignore_index=True) if morceaux else None
 
 
 def lire_brut(nom, **options):
@@ -20,10 +28,9 @@ def lire_brut(nom, **options):
     Un match présent dans la mise à jour remplace toutes ses lignes d'origine.
     """
     brut = pd.read_csv(BRUT_NBA / f"{nom}.csv", **options)
-    chemin_maj = DOSSIER_MAJ / f"{nom}.csv"
-    if not chemin_maj.exists():
+    maj = mise_a_jour(nom)
+    if maj is None:
         return brut
-    maj = pd.read_csv(chemin_maj)
     return pd.concat([brut[~brut["game_id"].isin(maj["game_id"])], maj], ignore_index=True)
 
 
@@ -65,9 +72,8 @@ def resumer_joueurs():
     # Joueurs sans statistiques = n'ont pas joué : ignorés par la somme (min_count=1)
     equipes = p.groupby(["game_id", "team_id"])[STATS_JOUEURS].sum(min_count=1).reset_index()
     # Matchs de la mise à jour : statistiques d'équipe déjà additionnées par la NBA
-    chemin_maj = DOSSIER_MAJ / "equipes.csv"
-    if chemin_maj.exists():
-        maj = pd.read_csv(chemin_maj)
+    maj = mise_a_jour("equipes")
+    if maj is not None:
         equipes = pd.concat([equipes[~equipes["game_id"].isin(maj["game_id"])],
                              maj[["game_id", "team_id"] + STATS_JOUEURS]], ignore_index=True)
     return equipes
